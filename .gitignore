@@ -21,3 +21,11 @@ dist/
 # ===== OS =====
 .DS_Store
 Thumbs.db
+
+# Python virtual environment
+.venv/
+Backend/.venv/
+
+# Environment variables
+.env
+
