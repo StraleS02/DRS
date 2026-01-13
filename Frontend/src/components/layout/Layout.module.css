@@ -1,0 +1,16 @@
+.page_layout{
+    background: linear-gradient(to bottom right, rgb(255, 41, 41), rgb(230, 52, 8), rgb(146, 30, 30));
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.section_header{
+    width: 100%;
+    height: fit-content;
+}
+.section_content{
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+}
