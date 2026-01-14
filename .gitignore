@@ -29,3 +29,5 @@ Backend/.venv/
 # Environment variables
 .env
 
+#===== Profile Pics =====
+uploads/
