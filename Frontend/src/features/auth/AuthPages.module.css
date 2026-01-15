@@ -1,0 +1,165 @@
+.root{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: linear-gradient(to bottom right, rgb(255, 26, 26), rgb(168, 0, 0));
+}
+.main_section,
+.switch_section{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 500px;
+}
+.main_section{ 
+    height: fit-content;
+    background: linear-gradient(to bottom right, white, rgb(235, 232, 232));
+    max-height: 99%;
+}
+.main_section .title{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    padding: 40px;
+    color: rgb(230, 1, 1);
+}
+.main_section form{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.main_section form > div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+.main_section form div input{
+    width: 100%;
+    font-size: 20px;
+}
+.main_section form div input[type="email"],
+.main_section form div input[type="password"],
+.main_section form div input[type="text"],
+.main_section form div input[type="number"],
+.main_section form div input[type="date"]{
+    height: 40px;
+    border: none;
+    border-bottom: 2px solid red;
+    padding-left: 10px;
+    background: none;
+}
+.main_section form div input[type="email"]:focus,
+.main_section form div input[type="password"]:focus,
+.main_section form div input[type="text"]:focus,
+.main_section form div input[type="number"]:focus,
+.main_section form div input[type="date"]:focus{
+    outline: none;
+    border-bottom: 3px solid red;
+    background-color: white;
+}
+.main_section form div input[type="date"]{
+    border: 1px solid red;
+}
+.main_section form div input::placeholder{
+    color: rgb(105, 105, 105);
+    font-size: 16px;
+}
+.main_section form div input[type="submit"]{
+    width: 100%;
+    font-size: 20px;
+    border: none;
+    background-color: rgb(255, 6, 6);
+    color: white;
+    height: 40px;
+}
+.main_section form div input[type="submit"]:hover{
+    background-color: rgb(255, 55, 55);
+    cursor: pointer;
+}
+.main_section form div input[type="submit"]:active{
+    font-size: 18px;
+}
+.field{
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    gap: 10px;
+    
+}
+.field_birthdate{
+    flex: 1;
+}
+.field_gender{
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid red;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 10%;
+}
+.field_gender > label{
+    display: flex;
+    flex-direction: row;
+    font-size: 18px;
+    cursor: pointer;
+    gap: 15%;
+    align-items: center;
+}
+.field_gender > label input[type="radio"] {
+  accent-color: #c52222;
+  transform: scale(1.1);
+  margin: 0;
+}
+.field_street{
+    flex: 5;
+}
+.field_number{
+    flex: 2;
+}
+
+.main_section .info{
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+.main_section .info span{
+    font-size: 16px;
+}
+
+.switch_section{
+    height: 40px;
+}
+.switch_link{
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: rgb(211, 0, 0);
+    background-color: white;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.switch_link:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+.switch_link:active{
+    font-size: 18px;
+}
