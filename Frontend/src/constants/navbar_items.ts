@@ -1,4 +1,4 @@
-import type { Role } from "./Roles";
+import type { Role } from "./roles";
 
 export interface SubmenuItem{
     title: string;
@@ -20,13 +20,9 @@ export const NavbarItems: NavbarItem[] = [
             {
                 title: 'Edit',
                 path: '/profile/edit'
-            },
-            {
-                title: 'Upgrade',
-                path: '/profile/upgrade'
             }
         ],
-        roles: ['author', 'visitor']
+        roles: ['author', 'reader']
     },
     {
         title: 'Recipes',
@@ -41,6 +37,6 @@ export const NavbarItems: NavbarItem[] = [
                 path: '/recipes/create'
             }
         ],
-        roles: ['author', 'visitor']
+        roles: ['author', 'reader']
     }
 ]

@@ -74,7 +74,7 @@
     color: rgb(105, 105, 105);
     font-size: 16px;
 }
-.main_section form div input[type="button"]{
+.main_section form div input[type="submit"]{
     width: 100%;
     font-size: 20px;
     border: none;
@@ -82,11 +82,11 @@
     color: white;
     height: 40px;
 }
-.main_section form div input[type="button"]:hover{
+.main_section form div input[type="submit"]:hover{
     background-color: rgb(255, 55, 55);
     cursor: pointer;
 }
-.main_section form div input[type="button"]:active{
+.main_section form div input[type="submit"]:active{
     font-size: 18px;
 }
 .field{
