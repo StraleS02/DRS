@@ -1,8 +1,13 @@
+import jwt
+from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from database.db import get_db_connection
 import os
+
+JWT_SECRET = os.getenv("JWT_SECRET")
+JWT_EXPIRES_MINUTES = int(os.getenv("JWT_EXPIRES_MINUTES", 60))
 
 # Redis (keš baza) - login rate limiting
 from services.redis_client import get_redis_client
@@ -43,18 +48,16 @@ def login():
             "retry_after_seconds": ttl
         }), 403
 
-
-    # ===============================
-    # ⬇⬇⬇ IZMENJENO: PROVERA U BAZI
-    # ===============================
     conn = get_db_connection()
     cur = conn.cursor()
 
     cur.execute(
         """
-        SELECT id, password_hash
-        FROM users
-        WHERE email = %s
+        SELECT u.id, u.password_hash, r.name
+        FROM users u
+        JOIN user_roles ur ON ur.user_id = u.id
+        JOIN roles r ON r.id = ur.role_id
+        WHERE u.email = %s
         """,
         (email,)
     )
@@ -69,7 +72,7 @@ def login():
         blocked_now, block_ttl, fails_now = register_failed_attempt(redis_client, email)
         return jsonify({"error": "Invalid credentials"}), 401
 
-    user_id, password_hash = user
+    user_id, password_hash, role = user
 
     # ❌ pogrešan password
     if not check_password_hash(password_hash, password):
@@ -93,9 +96,17 @@ def login():
     # ===============================
     reset_failures(redis_client, email)
 
+    payload = {
+        "user_id": user_id,
+        "email": email,
+        "role": role,
+        "exp": datetime.utcnow() + timedelta(minutes=JWT_EXPIRES_MINUTES)
+    }
+
+    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+
     return jsonify({
-        "message": "Login successful",
-        "user_id": user_id
+        "access_token": token
     }), 200
 
 @auth_bp.route("/api/auth/register", methods=["POST"])
