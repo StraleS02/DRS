@@ -12,7 +12,7 @@ export interface NavbarItem {
     roles: Role[];
 }
 
-export const NavbarItems: NavbarItem[] = [
+export const navbarItems: NavbarItem[] = [
     {
         title: 'Profile',
         defaultPath: '/profile/edit',
@@ -38,5 +38,19 @@ export const NavbarItems: NavbarItem[] = [
             }
         ],
         roles: ['author', 'reader']
+    },
+    {
+        title: 'Users',
+        defaultPath: '/users/all',
+        submenuItems: [
+            {
+                title: 'View All',
+                path: '/users/all'
+            }
+        ],
+        roles: ['admin']
     }
 ]
+export const getNavbarItemsByRole = (role: Role) => {
+    return navbarItems.filter(item => item.roles.includes(role));
+} 
