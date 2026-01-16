@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
-import { useAuth } from '../../app/AuthContext';
-import styles from './AuthPages.module.css';
 import { useNavigate } from 'react-router-dom';
-import type { RegisterResponse } from './types';
-import { register } from './auth.api';
+import type { RegisterResponse } from '../../../features/auth/auth.types';
+import { register } from '../../../features/auth/auth.api';
+import styles from './AuthViews.module.css';
+import { useCurrentUser } from '../../hooks/useCurrentUser';
 
 const RegisterPage = () => {
-    const {loading, user} = useAuth();
+    const {loading, user} = useCurrentUser();
     const emailRef = useRef<HTMLInputElement | null>(null);
     const passwordRef = useRef<HTMLInputElement | null>(null);
     const nameRef = useRef<HTMLInputElement | null>(null);
     const lastnameRef = useRef<HTMLInputElement | null>(null);
     const birthDateRef = useRef<HTMLInputElement | null>(null);
-     const [gender, setGender] = useState<string>("male");
+    const [gender, setGender] = useState<string>("male");
     const countryRef = useRef<HTMLInputElement | null>(null);
     const streetNameRef = useRef<HTMLInputElement | null>(null);
     const streetNumberRef = useRef<HTMLInputElement | null>(null);
@@ -42,7 +42,6 @@ const RegisterPage = () => {
         const country = countryRef.current?.value || "";
         const streetName = streetNameRef.current?.value || "";
         const streetNumber = streetNumberRef.current?.value || "";
-        //const  = birthDateRef.current?.value || "";
         //const image = imageRef.current?.files?.[0] || null;
 
         let formData:FormData = new FormData();
@@ -54,7 +53,7 @@ const RegisterPage = () => {
         formData.append("country", country);
         formData.append("streetName", streetName);
         formData.append("streetNumber", streetNumber);
-        //formData.append("", );
+        formData.append("gender", gender);
         //if(image) formData.append("image", image);
   
 
@@ -70,7 +69,7 @@ const RegisterPage = () => {
         <div className={styles.root}>
             <div className={styles.main_section}>
                 <div className={styles.title}>Register</div>
-                <form>
+                <form onSubmit={handleSubmitClicked}>
                     <div>
                         <input type='email' placeholder='Email' required ref={emailRef}></input>
                     </div>

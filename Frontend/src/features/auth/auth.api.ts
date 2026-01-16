@@ -1,9 +1,9 @@
-import { API_URL } from "../../utils/config";
-import type { User } from "../users/types";
-import type { LoginRequest, LoginResponse, RegisterResponse } from "./types";
+import { API_URL } from "../../env";
+import type { User } from "../../lib/types/User";
+import type { LoginRequest, LoginResponse, RegisterResponse } from "./auth.types";
 
 export const login = async (loginRequest:LoginRequest):Promise<LoginResponse> => {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify(loginRequest)
@@ -13,16 +13,15 @@ export const login = async (loginRequest:LoginRequest):Promise<LoginResponse> =>
         throw new Error("Invalid Credentials");
     }
 
-   
 
     const data:LoginResponse = await response.json();
-     console.log(data.token);
+    console.log(data.token);
     return data;
 } 
 
 export const register = async (formData: FormData):Promise<RegisterResponse> => {
     try {
-        const response = await fetch(`${API_URL}/auth/register`, {
+        const response = await fetch(`${API_URL}/api/auth/register`, {
             method: 'POST',
             body: formData
         });
