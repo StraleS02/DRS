@@ -53,7 +53,7 @@ const RegisterPage = () => {
         formData.append("country", country);
         formData.append("streetName", streetName);
         formData.append("streetNumber", streetNumber);
-        formData.append(gender, gender);
+        formData.append("gender", gender);
         //if(image) formData.append("image", image);
   
 

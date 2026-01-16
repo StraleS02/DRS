@@ -22,12 +22,12 @@ const Navbar = ({items}:NavbarProps) => {
     return (
         <div className={styles.navbar}>
             <div className={styles.section_items}>
-                {items.map(item => (
-                    <div className={styles.item}>
+                {items.map((item, index) => (
+                    <div key={item.title} className={styles.item}>
                         <a href={item.defaultPath}>{item.title}</a>
                         <div className={styles.submenu}>
                             {item.submenuItems.map(submenuItem => (
-                                <div className={styles.item}>
+                                <div key={submenuItem.title} className={styles.item}>
                                     <a href={submenuItem.path}>{submenuItem.title}</a>
                                 </div>
                             ))}

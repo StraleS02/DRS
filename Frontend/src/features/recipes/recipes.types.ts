@@ -1,7 +1,6 @@
-export type RecipePreparationDifficulty = "Easy" | "Medium" | "Hard";
+import type { RecipePreparationDifficulty } from "../../lib/types/Recipe";
 
-export interface Recipe{
-    id: number;
+export interface CreateRecipeRequest{
     name: string;
     type: string;
     preparationTimeMinutes: number;
@@ -11,4 +10,8 @@ export interface Recipe{
     steps: string;
     imageUrl: string;
     tags: string[];
+}
+export interface CreateRecipeResponse{
+    success: boolean;
+    message: string;
 }
