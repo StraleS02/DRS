@@ -1,123 +1,64 @@
-import jwt
-from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from database.db import get_db_connection
+from database.db import db
+from models.user import User
+from models.user_role import user_roles
+from models.role import Role
+import jwt
 import os
+from datetime import datetime, timedelta
 
 JWT_SECRET = os.getenv("JWT_SECRET")
 JWT_EXPIRES_MINUTES = int(os.getenv("JWT_EXPIRES_MINUTES", 60))
 
-# Redis (keš baza) - login rate limiting
-from services.redis_client import get_redis_client
-from services.redis_auth_guard import is_blocked, register_failed_attempt, reset_failures
-
 UPLOAD_FOLDER = "uploads/profile_images"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-
 auth_bp = Blueprint("auth", __name__)
 
-# Kreiramo Redis klijent jednom (za cijeli modul).
-# Redis mora da radi (docker compose up -d) da bi ovo radilo.
-redis_client = get_redis_client()
-
-
+# ===============================
+# LOGIN
+# ===============================
 @auth_bp.route("/api/auth/login", methods=["POST"])
 def login():
     data = request.get_json()
-
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
     email = data.get("email")
     password = data.get("password")
-
     if not email or not password:
         return jsonify({"error": "Email and password are required"}), 400
 
-
-    # ===============================
-    # REDIS – rate limit provera
-    # ===============================
-    blocked, ttl = is_blocked(redis_client, email)
-    if blocked:
-        return jsonify({
-            "error": "Too many failed attempts. Please try again later.",
-            "retry_after_seconds": ttl
-        }), 403
-
-    conn = get_db_connection()
-    cur = conn.cursor()
-
-    cur.execute(
-        """
-        SELECT u.id, u.password_hash, r.name
-        FROM users u
-        JOIN user_roles ur ON ur.user_id = u.id
-        JOIN roles r ON r.id = ur.role_id
-        WHERE u.email = %s
-        """,
-        (email,)
-    )
-
-    user = cur.fetchone()
-
-    cur.close()
-    conn.close()
-
-    # ❌ korisnik ne postoji
-    if not user:
-        blocked_now, block_ttl, fails_now = register_failed_attempt(redis_client, email)
+    # Dohvati korisnika i njegove role preko ORM-a
+    user = User.query.filter_by(email=email).first()
+    if not user or not check_password_hash(user.password_hash, password):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    user_id, password_hash, role = user
-
-    # ❌ pogrešan password
-    if not check_password_hash(password_hash, password):
-        blocked_now, block_ttl, fails_now = register_failed_attempt(redis_client, email)
-
-        if blocked_now:
-            return jsonify({
-                "error": "Too many failed attempts. You are temporarily blocked.",
-                "blocked_for_seconds": block_ttl
-            }), 403
-
-        return jsonify({
-            "error": "Invalid credentials",
-            "failed_attempts": fails_now,
-            "remaining_before_block": max(0, 3 - fails_now)
-        }), 401
-
-
-    # ===============================
-    # ✅ LOGIN USPEŠAN
-    # ===============================
-    reset_failures(redis_client, email)
+    # Uzmi prvu rolu korisnika (ako ima više, možeš poslati listu)
+    role = user.roles[0].name if user.roles else "reader"
 
     payload = {
-        "user_id": user_id,
-        "email": email,
+        "user_id": user.id,
+        "email": user.email,
         "role": role,
         "exp": datetime.utcnow() + timedelta(minutes=JWT_EXPIRES_MINUTES)
     }
-
     token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
-    return jsonify({
-        "access_token": token
-    }), 200
+    return jsonify({"access_token": token}), 200
 
+# ===============================
+# REGISTER
+# ===============================
 @auth_bp.route("/api/auth/register", methods=["POST"])
 def register():
     data = request.form
-
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
     required_fields = ["first_name", "last_name", "email", "password"]
-
     for field in required_fields:
         if not data.get(field):
             return jsonify({"error": f"{field} is required"}), 400
@@ -132,67 +73,50 @@ def register():
     street = data.get("street")
     street_number = data.get("street_number")
 
+    # Password hash
     password_hash = generate_password_hash(password)
 
-    # 🔽 NOVO: slika sa fronta
-    profile_image = request.files.get("profile_image")
+    # Upload slike ako postoji
+    profile_image_file = request.files.get("profile_image")
     image_path = None
-
-    if profile_image:
-        filename = secure_filename(profile_image.filename)
+    if profile_image_file:
+        filename = secure_filename(profile_image_file.filename)
         image_path = os.path.join(UPLOAD_FOLDER, filename)
-        profile_image.save(image_path)
+        profile_image_file.save(image_path)
 
-    conn = get_db_connection()
-    cur = conn.cursor()
+    # Provera da li email već postoji
+    if User.query.filter_by(email=email).first():
+        return jsonify({"error": "Email already exists"}), 409
 
-    try:
-        # 1️⃣ Provera da li email već postoji
-        cur.execute(
-            "SELECT id FROM users WHERE email = %s",
-            (email,)
-        )
-        if cur.fetchone():
-            return jsonify({"error": "Email already exists"}), 409
+    # Kreiranje korisnika
+    user = User(
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        password_hash=password_hash,
+        date_of_birth=date_of_birth,
+        gender=gender,
+        country=country,
+        street=street,
+        street_number=street_number,
+        profile_image=image_path
+    )
 
-        # 2️⃣ Insert u users
-        cur.execute(
-            """
-            INSERT INTO users
-            (first_name, last_name, email, password_hash, date_of_birth, gender, country, street, street_number, profile_image)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING id
-            """,
-            (first_name, last_name, email, password_hash, date_of_birth, gender, country, street, street_number, image_path)
-        )
+    # Dodela role "reader"
+    reader_role = Role.query.filter_by(name="reader").first()
+    if not reader_role:
+        # Kreiraj role ako ne postoji
+        reader_role = Role(name="reader")
+        db.session.add(reader_role)
+        db.session.commit()
 
-        user_id = cur.fetchone()[0]
+    user.roles.append(reader_role)
 
-        # 3️⃣ Dodela reader role
-        cur.execute(
-            "SELECT id FROM roles WHERE name = 'reader'"
-        )
-        role_id = cur.fetchone()[0]
+    # Sačuvaj u bazi
+    db.session.add(user)
+    db.session.commit()
 
-        cur.execute(
-            """
-            INSERT INTO user_roles (user_id, role_id)
-            VALUES (%s, %s)
-            """,
-            (user_id, role_id)
-        )
-
-        conn.commit()
-
-        return jsonify({
-            "message": "User registered successfully",
-            "user_id": user_id
-        }), 201
-
-    except Exception as e:
-        conn.rollback()
-        return jsonify({"error": str(e)}), 500
-
-    finally:
-        cur.close()
-        conn.close()
+    return jsonify({
+        "message": "User registered successfully",
+        "user_id": user.id
+    }), 201

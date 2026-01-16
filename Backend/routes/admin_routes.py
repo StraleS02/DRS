@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
-from database.db import get_db_connection
+from database.db import db
 from auth.jwt_middleware import jwt_required
+from models.user import User
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -14,37 +15,26 @@ def list_users():
     if not user or user.get("role") != "admin":
         return jsonify({"error": "Admin access required"}), 403
 
-    conn = get_db_connection()
-    cur = conn.cursor()
-
     try:
-        cur.execute("""
-            SELECT id, first_name, last_name, email, date_of_birth, gender, country, street, street_number
-            FROM users
-        """)
-        rows = cur.fetchall()
-
-        users = []
-        for row in rows:
-            users.append({
-                "id": row[0],
-                "first_name": row[1],
-                "last_name": row[2],
-                "email": row[3],
-                "date_of_birth": str(row[4]) if row[4] else None,
-                "gender": row[5],
-                "country": row[6],
-                "street": row[7],
-                "street_number": row[8]
+        users = User.query.all()
+        result = []
+        for u in users:
+            result.append({
+                "id": u.id,
+                "first_name": u.first_name,
+                "last_name": u.last_name,
+                "email": u.email,
+                "date_of_birth": str(u.date_of_birth) if u.date_of_birth else None,
+                "gender": u.gender,
+                "country": u.country,
+                "street": u.street,
+                "street_number": u.street_number
             })
 
-        return jsonify({"users": users}), 200
+        return jsonify({"users": result}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    finally:
-        cur.close()
-        conn.close()
 
 
 # =========================
@@ -57,24 +47,16 @@ def delete_user(user_id):
     if not user or user.get("role") != "admin":
         return jsonify({"error": "Admin access required"}), 403
 
-    conn = get_db_connection()
-    cur = conn.cursor()
-
     try:
-        # Provera da li korisnik postoji
-        cur.execute("SELECT id FROM users WHERE id = %s", (user_id,))
-        if not cur.fetchone():
+        target_user = User.query.get(user_id)
+        if not target_user:
             return jsonify({"error": "User not found"}), 404
 
-        # Brisanje korisnika (cascade će obrisati i role, komentare, itd.)
-        cur.execute("DELETE FROM users WHERE id = %s", (user_id,))
-        conn.commit()
+        db.session.delete(target_user)
+        db.session.commit()
 
         return jsonify({"message": f"User {user_id} deleted successfully"}), 200
 
     except Exception as e:
-        conn.rollback()
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
-    finally:
-        cur.close()
-        conn.close()

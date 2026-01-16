@@ -1,13 +1,15 @@
 import os
 import json
-import jwt
 from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
 from auth.jwt_middleware import jwt_required
-
-from database.db import get_db_connection
-
-JWT_SECRET = os.getenv("JWT_SECRET")
+from database.db import db
+from models.recipe import Recipe
+from models.recipe_ingredient import RecipeIngredient
+from models.ingredient import Ingredient
+from models.recipe_step import RecipeStep
+from models.tag import Tag
+from models.recipe_tag import RecipeTag
 
 recipe_bp = Blueprint("recipes", __name__)
 
@@ -15,13 +17,12 @@ UPLOAD_FOLDER = "uploads/recipes"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
+# ======================
+# CREATE RECIPE
+# ======================
 @recipe_bp.route("/api/recipes", methods=["POST"])
 @jwt_required
 def create_recipe():
-    """
-    Kreiranje novog recepta (samo AUTHOR)
-    """
-
     user = getattr(request, "user", None)
     if not user:
         return jsonify({"error": "User not found in request"}), 401
@@ -29,21 +30,11 @@ def create_recipe():
     author_id = user.get("user_id")
     role = user.get("role")
 
-    # ❌ Samo AUTHOR može da postavlja recepte
     if role != "author":
         return jsonify({"error": "Only authors can create recipes"}), 403
 
     data = request.form
-
-    required_fields = [
-        "name",
-        "meal_type",
-        "prep_time",
-        "difficulty",
-        "servings",
-        "ingredients",
-        "steps"
-    ]
+    required_fields = ["name", "meal_type", "prep_time", "difficulty", "servings", "ingredients", "steps"]
 
     for field in required_fields:
         if not data.get(field):
@@ -54,108 +45,125 @@ def create_recipe():
     prep_time = int(data.get("prep_time"))
     difficulty = data.get("difficulty")
     servings = int(data.get("servings"))
+    ingredients_data = json.loads(data.get("ingredients"))
+    steps_data = json.loads(data.get("steps"))
+    tags_data = json.loads(data.get("tags", "[]"))
 
-    ingredients = json.loads(data.get("ingredients"))
-    steps = json.loads(data.get("steps"))
-    tags = json.loads(data.get("tags", "[]"))
-
-    # 🖼️ Slika
-    image = request.files.get("image")
+    # Upload slike
+    image_file = request.files.get("image")
     image_path = None
-
-    if image:
-        filename = secure_filename(image.filename)
+    if image_file:
+        filename = secure_filename(image_file.filename)
         image_path = os.path.join(UPLOAD_FOLDER, filename)
-        image.save(image_path)
-
-    conn = get_db_connection()
-    cur = conn.cursor()
+        image_file.save(image_path)
 
     try:
-        # 1️⃣ Insert recipe
-        cur.execute(
-            """
-            INSERT INTO recipes
-            (author_id, name, meal_type, prep_time, difficulty, servings, image)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-            RETURNING id
-            """,
-            (author_id, name, meal_type, prep_time, difficulty, servings, image_path)
+        recipe = Recipe(
+            author_id=author_id,
+            name=name,
+            meal_type=meal_type,
+            prep_time=prep_time,
+            difficulty=difficulty,
+            servings=servings,
+            image=image_path
         )
+        db.session.add(recipe)
+        db.session.flush()  # da dobijemo ID recepta pre commit-a
 
-        recipe_id = cur.fetchone()[0]
+        # Ingredients
+        for ing in ingredients_data:
+            ingredient = Ingredient.query.filter_by(name=ing["name"]).first()
+            if not ingredient:
+                ingredient = Ingredient(name=ing["name"])
+                db.session.add(ingredient)
+                db.session.flush()
 
-        # 2️⃣ Ingredients
-        for ing in ingredients:
-            cur.execute(
-                "SELECT id FROM ingredients WHERE name = %s",
-                (ing["name"],)
+            ri = RecipeIngredient(
+                recipe_id=recipe.id,
+                ingredient_id=ingredient.id,
+                quantity=ing["quantity"]
             )
-            row = cur.fetchone()
+            db.session.add(ri)
 
-            if row:
-                ingredient_id = row[0]
-            else:
-                cur.execute(
-                    "INSERT INTO ingredients (name) VALUES (%s) RETURNING id",
-                    (ing["name"],)
-                )
-                ingredient_id = cur.fetchone()[0]
+        # Steps
+        for idx, step in enumerate(steps_data, start=1):
+            rs = RecipeStep(recipe_id=recipe.id, step_number=idx, description=step)
+            db.session.add(rs)
 
-            cur.execute(
-                """
-                INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity)
-                VALUES (%s, %s, %s)
-                """,
-                (recipe_id, ingredient_id, ing["quantity"])
-            )
+        # Tags
+        for tag_name in tags_data:
+            tag = Tag.query.filter_by(name=tag_name).first()
+            if not tag:
+                tag = Tag(name=tag_name)
+                db.session.add(tag)
+                db.session.flush()
 
-        # 3️⃣ Steps
-        for index, step in enumerate(steps, start=1):
-            cur.execute(
-                """
-                INSERT INTO recipe_steps (recipe_id, step_number, description)
-                VALUES (%s, %s, %s)
-                """,
-                (recipe_id, index, step)
-            )
+            rt = RecipeTag(recipe_id=recipe.id, tag_id=tag.id)
+            db.session.add(rt)
 
-        # 4️⃣ Tags
-        for tag in tags:
-            cur.execute(
-                "SELECT id FROM tags WHERE name = %s",
-                (tag,)
-            )
-            row = cur.fetchone()
-
-            if row:
-                tag_id = row[0]
-            else:
-                cur.execute(
-                    "INSERT INTO tags (name) VALUES (%s) RETURNING id",
-                    (tag,)
-                )
-                tag_id = cur.fetchone()[0]
-
-            cur.execute(
-                """
-                INSERT INTO recipe_tags (recipe_id, tag_id)
-                VALUES (%s, %s)
-                """,
-                (recipe_id, tag_id)
-            )
-
-        conn.commit()
-
-        return jsonify({
-            "message": "Recipe created successfully",
-            "recipe_id": recipe_id
-        }), 201
+        db.session.commit()
+        return jsonify({"message": "Recipe created successfully", "recipe_id": recipe.id}), 201
 
     except Exception as e:
-        conn.rollback()
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-    finally:
-        cur.close()
-        conn.close()
+
+# ======================
+# UPDATE RECIPE
+# ======================
+@recipe_bp.route("/api/recipes/<int:recipe_id>", methods=["PUT"])
+@jwt_required
+def update_recipe(recipe_id):
+    user_id = request.user.get("user_id")
+    data = request.form
+
+    recipe = Recipe.query.get(recipe_id)
+    if not recipe:
+        return jsonify({"error": "Recipe not found"}), 404
+
+    if recipe.author_id != user_id:
+        return jsonify({"error": "You are not allowed to edit this recipe"}), 403
+
+    # Update osnovnih polja
+    for field in ["name", "meal_type", "prep_time", "difficulty", "servings"]:
+        if data.get(field):
+            setattr(recipe, field, data.get(field))
+
+    # Slika
+    image_file = request.files.get("image")
+    if image_file:
+        filename = secure_filename(image_file.filename)
+        image_path = os.path.join(UPLOAD_FOLDER, filename)
+        image_file.save(image_path)
+        recipe.image = image_path
+
+    try:
+        db.session.commit()
+        return jsonify({"message": "Recipe updated successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+# ======================
+# DELETE RECIPE
+# ======================
+@recipe_bp.route("/api/recipes/<int:recipe_id>", methods=["DELETE"])
+@jwt_required
+def delete_recipe(recipe_id):
+    user_id = request.user.get("user_id")
+    recipe = Recipe.query.get(recipe_id)
+    if not recipe:
+        return jsonify({"error": "Recipe not found"}), 404
+
+    if recipe.author_id != user_id:
+        return jsonify({"error": "You are not allowed to delete this recipe"}), 403
+
+    try:
+        db.session.delete(recipe)
+        db.session.commit()
+        return jsonify({"message": "Recipe deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
