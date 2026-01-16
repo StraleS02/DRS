@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../app/AuthContext';
-import { isAuthenticated } from '../../features/auth/auth.api';
 import styles from './Navbar.module.css';
-import type { NavbarItem } from '../../constants/navbar_items';
+import type { NavbarItem } from '../../../constants/navbar_items';
+import { isAuthenticated, useAuth } from '../../features/auth';
 
 type NavbarProps = {
     items: NavbarItem[]

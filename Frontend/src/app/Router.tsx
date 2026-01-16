@@ -1,9 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import LoginPage from "../features/auth/LoginPage";
-import RegisterPage from "../features/auth/RegisterPage";
+import { LoginPage, RegisterPage } from "../features/auth";
 import ViewRecipesPage from "../features/recipes/ViewRecipesPage";
-import RecipeWrapper from "../features/recipes/RecipeWrapper";
-import CreateRecipePage from "../features/recipes/CreateRecipePage";
+import RecipeWrapper from "../features/recipes/RecipeWrapper"; 
+import CreateRecipePage from "../features/recipes/CreateRecipePage"; 
 
 const Router = () => {
     return (

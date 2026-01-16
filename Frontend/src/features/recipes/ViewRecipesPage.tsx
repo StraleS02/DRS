@@ -1,6 +1,6 @@
-import PageLayout from "../../components/layout/PageLayout";
-import Navbar from "../../components/navbar/Navbar";
-import { getNavbarItemsByRole } from "../../constants/navbar_items";
+import PageLayout from "../../layouts/view/PageLayout";
+import Navbar from "../../layouts/navbar/Navbar";
+import { getNavbarItemsByRole } from "../../lib/constants/navbar_items";
 import Recipe from "./components/recipe/Recipe";
 import styles from './RecipePages.module.css';
 

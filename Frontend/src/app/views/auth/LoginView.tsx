@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../app/AuthContext';
-import styles from './AuthPages.module.css';
+import styles from './AuthViews.module.css';
 import { useEffect, useRef, useState } from 'react';
-import type { LoginRequest, LoginResponse } from './types';
-import { authenticate, login } from './auth.api';
+import type { LoginRequest, LoginResponse } from '../../../features/auth/auth.types';
+import { authenticate, login } from '../../../features/auth/auth.api';
+import { useAuth } from '../../AuthContext';
 
 const LoginPage = () => {
     const {token, user, loading, handleLogin} = useAuth();
