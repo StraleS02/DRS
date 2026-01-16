@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
-import type { User } from "../features/users/types";
-import { getToken, getUser, isAuthenticated, unauthenticate } from "../features/auth/auth.api";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import type { User } from "../lib/types/User";
+import { getToken, getUser, isAuthenticated, unauthenticate } from "../features/auth";
 
 type AuthContextType = {
     token: string | null,
@@ -10,7 +10,7 @@ type AuthContextType = {
     loading: boolean;
  }
 
- const AuthContext = createContext<AuthContextType | undefined>(undefined);
+ export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
  export const AuthProvider = ({children}:{children: ReactNode}) => {
     const [token, setToken] = useState<string | null>(null);

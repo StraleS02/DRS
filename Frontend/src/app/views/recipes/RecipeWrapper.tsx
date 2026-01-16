@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import ViewRecipePage from "./ViewRecipePage";
+import ViewRecipePage from "./RecipeView";
 
 const RecipeWrapper = () => {
     const {recipeId} = useParams<{recipeId: string}>();

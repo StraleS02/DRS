@@ -1,8 +1,8 @@
 import { useEffect, type JSX } from "react";
-import type { Role } from "../constants/roles";
+import type { Role } from "../lib/constants/roles";
 import { useAuth } from "./AuthContext";
-import { isAuthenticated } from "../features/auth/auth.api";
 import { Navigate } from "react-router-dom";
+import { isAuthenticated } from "../features/auth";
 
 type ProtectedRouteProps = {
     children: JSX.Element;

@@ -1,19 +1,18 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../app/AuthContext';
-import { isAuthenticated } from '../../features/auth/auth.api';
 import styles from './Navbar.module.css';
-import type { NavbarItem } from '../../constants/navbar_items';
+import type { NavbarItem } from '../../lib/constants/navbar_items';
+import { useAuth } from '../../app/AuthContext';
 
 type NavbarProps = {
     items: NavbarItem[]
 };
 
 const Navbar = ({items}:NavbarProps) => {
-    const {user, handleLogout} = useAuth();
+    const {user, token, handleLogout} = useAuth();
     const navigate = useNavigate();
 
     const handleLogoutButtonClicked = () => {
-        if(isAuthenticated()) {
+        if(token) {
             handleLogout();
         }else{
             navigate("/");
@@ -23,12 +22,12 @@ const Navbar = ({items}:NavbarProps) => {
     return (
         <div className={styles.navbar}>
             <div className={styles.section_items}>
-                {items.map(item => (
-                    <div className={styles.item}>
+                {items.map((item, index) => (
+                    <div key={item.title} className={styles.item}>
                         <a href={item.defaultPath}>{item.title}</a>
                         <div className={styles.submenu}>
                             {item.submenuItems.map(submenuItem => (
-                                <div className={styles.item}>
+                                <div key={submenuItem.title} className={styles.item}>
                                     <a href={submenuItem.path}>{submenuItem.title}</a>
                                 </div>
                             ))}

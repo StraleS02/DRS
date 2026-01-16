@@ -1,21 +1,23 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import LoginPage from "../features/auth/LoginPage";
-import RegisterPage from "../features/auth/RegisterPage";
-import ViewRecipesPage from "../features/recipes/ViewRecipesPage";
-import RecipeWrapper from "../features/recipes/RecipeWrapper";
-import CreateRecipePage from "../features/recipes/CreateRecipePage";
+import RecipesView from "./views/recipes/RecipesView";
+import CreateRecipeView from "./views/recipes/CreateRecipeView";
+import LoginView from "./views/auth/LoginView";
+import RegisterView from "./views/auth/RegisterView";
+import RecipeWrapper from "./views/recipes/RecipeWrapper";
+import ProtectedRoute from "./ProtectedRoute";
+
 
 const Router = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<LoginPage/>}></Route>
-                <Route path="/auth/login" element={<LoginPage/>}></Route>
-                <Route path="/auth/register" element={<RegisterPage/>}></Route>
+                <Route path="/" element={<LoginView/>}></Route>
+                <Route path="/auth/login" element={<LoginView/>}></Route>
+                <Route path="/auth/register" element={<RegisterView/>}></Route>
                 
-                <Route path="/recipes/all" element={<ViewRecipesPage/>}></Route>
-                <Route path="/recipes/:recipeId" element={<RecipeWrapper></RecipeWrapper>}></Route>
-                <Route path="/recipes/create" element={<CreateRecipePage></CreateRecipePage>}></Route>
+                <Route path="/recipes/all" element={<ProtectedRoute requiredRoles={['author', 'reader']}><RecipesView/></ProtectedRoute>}></Route>
+                <Route path="/recipes/:recipeId" element={<ProtectedRoute requiredRoles={['author', 'reader']}><RecipeWrapper></RecipeWrapper></ProtectedRoute>}></Route>
+                <Route path="/recipes/create" element={<ProtectedRoute requiredRoles={['author', 'reader']}><CreateRecipeView></CreateRecipeView></ProtectedRoute>}></Route>
                 <Route path="/profile/"></Route>
 
                 <Route path="*" element={<div>Page Not found</div>}></Route>
