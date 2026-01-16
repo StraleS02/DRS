@@ -1,18 +1,18 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './Navbar.module.css';
-import type { NavbarItem } from '../../../constants/navbar_items';
-import { isAuthenticated, useAuth } from '../../features/auth';
+import type { NavbarItem } from '../../lib/constants/navbar_items';
+import { useAuth } from '../../app/AuthContext';
 
 type NavbarProps = {
     items: NavbarItem[]
 };
 
 const Navbar = ({items}:NavbarProps) => {
-    const {user, handleLogout} = useAuth();
+    const {user, token, handleLogout} = useAuth();
     const navigate = useNavigate();
 
     const handleLogoutButtonClicked = () => {
-        if(isAuthenticated()) {
+        if(token) {
             handleLogout();
         }else{
             navigate("/");
