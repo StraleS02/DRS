@@ -10,3 +10,4 @@ from .ingredient import Ingredient
 from .tag import Tag
 from .recipe_ingredient import RecipeIngredient
 from .recipe_step import RecipeStep
+from .author_request import AuthorRequest

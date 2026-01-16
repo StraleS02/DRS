@@ -22,6 +22,8 @@ class User(db.Model):
     favorites = db.relationship("FavoriteRecipe", back_populates="user", cascade="all, delete-orphan")
     ratings = db.relationship("RecipeRating", back_populates="user", cascade="all, delete-orphan")
     comments = db.relationship("RecipeComment", back_populates="user", cascade="all, delete-orphan")
+    author_requests = db.relationship("AuthorRequest", back_populates="user", cascade="all, delete-orphan"
+)
 
     def __repr__(self):
         return f"<User {self.id} - {self.email}>"
