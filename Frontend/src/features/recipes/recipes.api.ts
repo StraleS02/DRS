@@ -1,5 +1,6 @@
 import { useAuth } from "../../app/AuthContext";
 import { API_URL } from "../../env";
+import type { Recipe } from "../../lib/types/Recipe";
 import { getToken } from "../auth";
 import type { CreateRecipeResponse } from "./recipes.types";
 
