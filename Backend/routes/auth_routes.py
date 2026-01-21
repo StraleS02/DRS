@@ -5,6 +5,9 @@ from database.db import db
 from models.user import User
 from models.user_role import user_roles
 from models.role import Role
+# Redis (keš baza) - login rate limiting
+from services.redis_client import get_redis_client
+from services.redis_auth_guard import is_blocked, register_failed_attempt, reset_failures
 import jwt
 import os
 from datetime import datetime, timedelta
@@ -17,6 +20,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 auth_bp = Blueprint("auth", __name__)
 
+redis_client = get_redis_client()
+
 # ===============================
 # LOGIN
 # ===============================
@@ -28,15 +33,65 @@ def login():
 
     email = data.get("email")
     password = data.get("password")
+
     if not email or not password:
         return jsonify({"error": "Email and password are required"}), 400
 
-    # Dohvati korisnika i njegove role preko ORM-a
-    user = User.query.filter_by(email=email).first()
-    if not user or not check_password_hash(user.password_hash, password):
-        return jsonify({"error": "Invalid credentials"}), 401
+    # ===============================
+    # 1️⃣ Redis – provera da li je blokiran
+    # ===============================
+    blocked, ttl = is_blocked(redis_client, email)
+    if blocked:
+        return jsonify({
+            "error": "Too many failed attempts. Please try again later.",
+            "retry_after_seconds": ttl
+        }), 403
 
-    # Uzmi prvu rolu korisnika (ako ima više, možeš poslati listu)
+    # ===============================
+    # 2️⃣ ORM – dohvat korisnika
+    # ===============================
+    user = User.query.filter_by(email=email).first()
+
+    # ❌ korisnik ne postoji
+    if not user:
+        blocked_now, block_ttl, fails_now = register_failed_attempt(redis_client, email)
+
+        if blocked_now:
+            return jsonify({
+                "error": "Too many failed attempts. You are temporarily blocked.",
+                "blocked_for_seconds": block_ttl
+            }), 403
+
+        return jsonify({
+            "error": "Invalid credentials",
+            "failed_attempts": fails_now,
+            "remaining_before_block": max(0, 3 - fails_now)
+        }), 401
+
+    # ❌ lozinka nije dobra
+    if not check_password_hash(user.password_hash, password):
+        blocked_now, block_ttl, fails_now = register_failed_attempt(redis_client, email)
+
+        if blocked_now:
+            return jsonify({
+                "error": "Too many failed attempts. You are temporarily blocked.",
+                "blocked_for_seconds": block_ttl
+            }), 403
+
+        return jsonify({
+            "error": "Invalid credentials",
+            "failed_attempts": fails_now,
+            "remaining_before_block": max(0, 3 - fails_now)
+        }), 401
+
+    # ===============================
+    # 3️⃣ Login uspešan → reset Redis failova
+    # ===============================
+    reset_failures(redis_client, email)
+
+    # ===============================
+    # 4️⃣ Rola korisnika
+    # ===============================
     role = user.roles[0].name if user.roles else "reader"
 
     payload = {
@@ -45,9 +100,14 @@ def login():
         "role": role,
         "exp": datetime.utcnow() + timedelta(minutes=JWT_EXPIRES_MINUTES)
     }
+
     token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
-    return jsonify({"access_token": token}), 200
+    return jsonify({
+        "message": "Login successful",
+        "access_token": token
+    }), 200
+
 
 # ===============================
 # REGISTER
