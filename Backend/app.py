@@ -6,6 +6,7 @@ from routes.admin_routes import admin_bp
 from routes.user_routes import user_bp
 from routes.recipe_interaction_routes import interaction_bp
 from routes.author_request_routes import author_request_bp
+from routes.author_routes import author_bp
 from database.db import db
 from services.socketio_server import socketio
 
@@ -29,6 +30,7 @@ app.register_blueprint(admin_bp)
 app.register_blueprint(user_bp)
 app.register_blueprint(interaction_bp)
 app.register_blueprint(author_request_bp)
+app.register_blueprint(author_bp)
 
 if __name__ == "__main__":
     app.run(debug=True)
