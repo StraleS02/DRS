@@ -1,7 +1,7 @@
 import os
 import json
+import uuid
 from flask import Blueprint, request, jsonify
-from werkzeug.utils import secure_filename
 from auth.jwt_middleware import jwt_required
 from database.db import db
 from models.recipe import Recipe
@@ -10,16 +10,14 @@ from models.ingredient import Ingredient
 from models.recipe_step import RecipeStep
 from models.tag import Tag
 from models.recipe_tag import RecipeTag
+from services.minio_client import minio_client, BUCKET_NAME
 
 recipe_bp = Blueprint("recipes", __name__)
 
-UPLOAD_FOLDER = "uploads/recipes"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-
-# ======================
+# ==================================================
 # CREATE RECIPE
-# ======================
+# ==================================================
 @recipe_bp.route("/api/recipes", methods=["POST"])
 @jwt_required
 def create_recipe():
@@ -27,50 +25,59 @@ def create_recipe():
     if not user:
         return jsonify({"error": "User not found in request"}), 401
 
-    author_id = user.get("user_id")
-    role = user.get("role")
-
-    if role != "author":
+    if user.get("role") != "author":
         return jsonify({"error": "Only authors can create recipes"}), 403
 
+    author_id = user.get("user_id")
     data = request.form
-    required_fields = ["name", "meal_type", "prep_time", "difficulty", "servings", "ingredients", "steps"]
 
+    required_fields = ["name", "meal_type", "prep_time", "difficulty", "servings", "ingredients", "steps"]
     for field in required_fields:
         if not data.get(field):
             return jsonify({"error": f"{field} is required"}), 400
 
-    name = data.get("name")
-    meal_type = data.get("meal_type")
-    prep_time = int(data.get("prep_time"))
-    difficulty = data.get("difficulty")
-    servings = int(data.get("servings"))
     ingredients_data = json.loads(data.get("ingredients"))
     steps_data = json.loads(data.get("steps"))
     tags_data = json.loads(data.get("tags", "[]"))
 
-    # Upload slike
+    # =========================
+    # UPLOAD IMAGE (MinIO)
+    # =========================
     image_file = request.files.get("image")
-    image_path = None
+    image_url = None
+
     if image_file:
-        filename = secure_filename(image_file.filename)
-        image_path = os.path.join(UPLOAD_FOLDER, filename)
-        image_file.save(image_path)
+        ext = image_file.filename.rsplit(".", 1)[-1]
+        object_name = f"recipes/{uuid.uuid4()}.{ext}"
+
+        minio_client.put_object(
+            BUCKET_NAME,
+            object_name,
+            image_file,
+            length=-1,
+            part_size=10 * 1024 * 1024,
+            content_type=image_file.content_type
+        )
+
+        image_url = f"http://{os.getenv('MINIO_ENDPOINT')}/{BUCKET_NAME}/{object_name}"
 
     try:
         recipe = Recipe(
             author_id=author_id,
-            name=name,
-            meal_type=meal_type,
-            prep_time=prep_time,
-            difficulty=difficulty,
-            servings=servings,
-            image=image_path
+            name=data.get("name"),
+            meal_type=data.get("meal_type"),
+            prep_time=int(data.get("prep_time")),
+            difficulty=data.get("difficulty"),
+            servings=int(data.get("servings")),
+            image=image_url
         )
-        db.session.add(recipe)
-        db.session.flush()  # da dobijemo ID recepta pre commit-a
 
-        # Ingredients
+        db.session.add(recipe)
+        db.session.flush()
+
+        # =========================
+        # INGREDIENTS
+        # =========================
         for ing in ingredients_data:
             ingredient = Ingredient.query.filter_by(name=ing["name"]).first()
             if not ingredient:
@@ -78,19 +85,25 @@ def create_recipe():
                 db.session.add(ingredient)
                 db.session.flush()
 
-            ri = RecipeIngredient(
+            db.session.add(RecipeIngredient(
                 recipe_id=recipe.id,
                 ingredient_id=ingredient.id,
                 quantity=ing["quantity"]
-            )
-            db.session.add(ri)
+            ))
 
-        # Steps
+        # =========================
+        # STEPS
+        # =========================
         for idx, step in enumerate(steps_data, start=1):
-            rs = RecipeStep(recipe_id=recipe.id, step_number=idx, description=step)
-            db.session.add(rs)
+            db.session.add(RecipeStep(
+                recipe_id=recipe.id,
+                step_number=idx,
+                description=step
+            ))
 
-        # Tags
+        # =========================
+        # TAGS
+        # =========================
         for tag_name in tags_data:
             tag = Tag.query.filter_by(name=tag_name).first()
             if not tag:
@@ -98,8 +111,7 @@ def create_recipe():
                 db.session.add(tag)
                 db.session.flush()
 
-            rt = RecipeTag(recipe_id=recipe.id, tag_id=tag.id)
-            db.session.add(rt)
+            db.session.add(RecipeTag(recipe_id=recipe.id, tag_id=tag.id))
 
         db.session.commit()
         return jsonify({"message": "Recipe created successfully", "recipe_id": recipe.id}), 201
@@ -109,34 +121,52 @@ def create_recipe():
         return jsonify({"error": str(e)}), 500
 
 
-# ======================
+# ==================================================
 # UPDATE RECIPE
-# ======================
+# ==================================================
 @recipe_bp.route("/api/recipes/<int:recipe_id>", methods=["PUT"])
 @jwt_required
 def update_recipe(recipe_id):
     user_id = request.user.get("user_id")
-    data = request.form
-
     recipe = Recipe.query.get(recipe_id)
+
     if not recipe:
         return jsonify({"error": "Recipe not found"}), 404
-
     if recipe.author_id != user_id:
         return jsonify({"error": "You are not allowed to edit this recipe"}), 403
 
+    data = request.form
+
     # Update osnovnih polja
     for field in ["name", "meal_type", "prep_time", "difficulty", "servings"]:
-        if data.get(field):
+        if field in data:
             setattr(recipe, field, data.get(field))
 
-    # Slika
+    # =========================
+    # UPDATE IMAGE (delete old)
+    # =========================
     image_file = request.files.get("image")
     if image_file:
-        filename = secure_filename(image_file.filename)
-        image_path = os.path.join(UPLOAD_FOLDER, filename)
-        image_file.save(image_path)
-        recipe.image = image_path
+        try:
+            if recipe.image:
+                old_object = "/".join(recipe.image.split("/")[4:])
+                minio_client.remove_object(BUCKET_NAME, old_object)
+        except Exception as e:
+            print(f"Warning: could not delete old image: {e}")
+
+        ext = image_file.filename.rsplit(".", 1)[-1]
+        object_name = f"recipes/{uuid.uuid4()}.{ext}"
+
+        minio_client.put_object(
+            BUCKET_NAME,
+            object_name,
+            image_file,
+            length=-1,
+            part_size=10 * 1024 * 1024,
+            content_type=image_file.content_type
+        )
+
+        recipe.image = f"http://{os.getenv('MINIO_ENDPOINT')}/{BUCKET_NAME}/{object_name}"
 
     try:
         db.session.commit()
@@ -146,24 +176,33 @@ def update_recipe(recipe_id):
         return jsonify({"error": str(e)}), 500
 
 
-# ======================
+# ==================================================
 # DELETE RECIPE
-# ======================
+# ==================================================
 @recipe_bp.route("/api/recipes/<int:recipe_id>", methods=["DELETE"])
 @jwt_required
 def delete_recipe(recipe_id):
     user_id = request.user.get("user_id")
     recipe = Recipe.query.get(recipe_id)
+
     if not recipe:
         return jsonify({"error": "Recipe not found"}), 404
-
     if recipe.author_id != user_id:
         return jsonify({"error": "You are not allowed to delete this recipe"}), 403
 
     try:
+        # Obriši sliku iz MinIO-a
+        if recipe.image:
+            try:
+                object_name = "/".join(recipe.image.split("/")[4:])
+                minio_client.remove_object(BUCKET_NAME, object_name)
+            except Exception as e:
+                print(f"Warning: could not delete recipe image: {e}")
+
         db.session.delete(recipe)
         db.session.commit()
         return jsonify({"message": "Recipe deleted successfully"}), 200
+
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500

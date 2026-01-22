@@ -11,8 +11,16 @@ from models.user import User
 from models.recipe import Recipe
 from models.role import Role
 from models.recipe_rating import RecipeRating
+from services.minio_client import minio_client, BUCKET_NAME
+import os
 
 admin_bp = Blueprint("admin", __name__)
+
+# --------------------------------------------------
+# Helper: admin check
+# --------------------------------------------------
+def is_admin():
+    return getattr(request, "user", {}).get("role") == "admin"
 
 # =========================
 # Lista svih korisnika
@@ -20,31 +28,26 @@ admin_bp = Blueprint("admin", __name__)
 @admin_bp.route("/api/admin/users", methods=["GET"])
 @jwt_required
 def list_users():
-    user = getattr(request, "user", None)
-    if not user or user.get("role") != "admin":
+    if not is_admin():
         return jsonify({"error": "Admin access required"}), 403
 
-    try:
-        users = User.query.all()
-        result = []
-        for u in users:
-            result.append({
-                "id": u.id,
-                "first_name": u.first_name,
-                "last_name": u.last_name,
-                "email": u.email,
-                "date_of_birth": str(u.date_of_birth) if u.date_of_birth else None,
-                "gender": u.gender,
-                "country": u.country,
-                "street": u.street,
-                "street_number": u.street_number
-            })
+    users = User.query.all()
+    result = []
+    for u in users:
+        result.append({
+            "id": u.id,
+            "first_name": u.first_name,
+            "last_name": u.last_name,
+            "email": u.email,
+            "date_of_birth": str(u.date_of_birth) if u.date_of_birth else None,
+            "gender": u.gender,
+            "country": u.country,
+            "street": u.street,
+            "street_number": u.street_number,
+            "profile_image": u.profile_image
+        })
 
-        return jsonify({"users": result}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
+    return jsonify({"users": result}), 200
 
 # =========================
 # Brisanje korisnika
@@ -52,29 +55,31 @@ def list_users():
 @admin_bp.route("/api/admin/users/<int:user_id>", methods=["DELETE"])
 @jwt_required
 def delete_user(user_id):
-    user = getattr(request, "user", None)
-    if not user or user.get("role") != "admin":
+    if not is_admin():
         return jsonify({"error": "Admin access required"}), 403
 
-    try:
-        target_user = User.query.get(user_id)
-        if not target_user:
-            return jsonify({"error": "User not found"}), 404
+    target_user = User.query.get(user_id)
+    if not target_user:
+        return jsonify({"error": "User not found"}), 404
 
+    # Ako korisnik ima profilnu sliku na MinIO-u → obriši
+    if target_user.profile_image:
+        try:
+            # Pretpostavljamo da je URL oblika: http://<endpoint>/<bucket>/users/<uuid>.ext
+            object_path = "/".join(target_user.profile_image.split("/")[4:])
+            if minio_client.bucket_exists(BUCKET_NAME):
+                minio_client.remove_object(BUCKET_NAME, object_path)
+        except Exception as e:
+            # Ne zaustavljaj brisanje korisnika zbog greške u MinIO-u
+            print(f"Warning: Could not delete profile image from MinIO: {e}")
+
+    try:
         db.session.delete(target_user)
         db.session.commit()
-
         return jsonify({"message": f"User {user_id} deleted successfully"}), 200
-
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
-    
-# --------------------------------------------------
-# Helper: admin check
-# --------------------------------------------------
-def is_admin():
-    return request.user.get("role") == "admin"
 
 # ==================================================
 #  ADMIN DASHBOARD STATS
@@ -98,9 +103,8 @@ def admin_stats():
         "total_readers": len(reader_role.users) if reader_role else 0
     }), 200
 
-
 # ==================================================
-#  GENERATE PDF REPORT
+#  GENERATE PDF REPORT: Top 5 Authors
 # ==================================================
 @admin_bp.route("/api/admin/report/top-authors", methods=["GET"])
 @jwt_required
@@ -152,4 +156,3 @@ def top_authors_pdf():
         download_name="top_authors_report.pdf",
         mimetype="application/pdf"
     )
-

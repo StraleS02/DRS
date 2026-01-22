@@ -1,16 +1,17 @@
 import os
+import uuid
 from flask import Blueprint, request, jsonify
-from werkzeug.utils import secure_filename
 from auth.jwt_middleware import jwt_required
 from database.db import db
 from models.user import User
+from services.minio_client import minio_client, BUCKET_NAME
+from werkzeug.utils import secure_filename
 
 user_bp = Blueprint("users", __name__)
 
-UPLOAD_FOLDER = "uploads/profile_images"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-
+# =========================
+# UPDATE PROFILE
+# =========================
 @user_bp.route("/api/users/profile", methods=["PUT"])
 @jwt_required
 def update_profile():
@@ -28,10 +29,30 @@ def update_profile():
     # Upload nove slike ako postoji
     image_file = request.files.get("profile_image")
     if image_file:
-        filename = secure_filename(image_file.filename)
-        image_path = os.path.join(UPLOAD_FOLDER, filename)
-        image_file.save(image_path)
-        user.profile_image = image_path  # update slike
+        try:
+            # Ako korisnik već ima sliku → obriši staru iz MinIO-a
+            if user.profile_image:
+                old_object_path = "/".join(user.profile_image.split("/")[4:])
+                if minio_client.bucket_exists(BUCKET_NAME):
+                    minio_client.remove_object(BUCKET_NAME, old_object_path)
+        except Exception as e:
+            print(f"Warning: could not delete old profile image: {e}")
+
+        # Upload nove slike
+        ext = image_file.filename.rsplit(".", 1)[-1]
+        object_name = f"users/{uuid.uuid4()}.{ext}"
+
+        minio_client.put_object(
+            BUCKET_NAME,
+            object_name,
+            image_file,
+            length=-1,
+            part_size=10 * 1024 * 1024,
+            content_type=image_file.content_type
+        )
+
+        # Sačuvaj novi URL u bazi
+        user.profile_image = f"http://{os.getenv('MINIO_ENDPOINT')}/{BUCKET_NAME}/{object_name}"
 
     # Update ostalih polja
     if "first_name" in data:

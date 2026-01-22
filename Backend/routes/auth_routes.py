@@ -8,15 +8,18 @@ from models.role import Role
 # Redis (keš baza) - login rate limiting
 from services.redis_client import get_redis_client
 from services.redis_auth_guard import is_blocked, register_failed_attempt, reset_failures
+from datetime import datetime, timedelta
+from services.minio_client import minio_client, BUCKET_NAME
 import jwt
 import os
-from datetime import datetime, timedelta
+import uuid
+
 
 JWT_SECRET = os.getenv("JWT_SECRET")
 JWT_EXPIRES_MINUTES = int(os.getenv("JWT_EXPIRES_MINUTES", 60))
 
-UPLOAD_FOLDER = "uploads/profile_images"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+#UPLOAD_FOLDER = "uploads/profile_images"
+#os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -138,11 +141,22 @@ def register():
 
     # Upload slike ako postoji
     profile_image_file = request.files.get("profile_image")
-    image_path = None
+    image_url = None
+
     if profile_image_file:
-        filename = secure_filename(profile_image_file.filename)
-        image_path = os.path.join(UPLOAD_FOLDER, filename)
-        profile_image_file.save(image_path)
+        ext = profile_image_file.filename.rsplit(".", 1)[-1]
+        object_name = f"users/{uuid.uuid4()}.{ext}"
+
+        minio_client.put_object(
+            BUCKET_NAME,
+            object_name,
+            profile_image_file,
+            length=-1,
+            part_size=10 * 1024 * 1024,
+            content_type=profile_image_file.content_type
+        )
+
+        image_url = f"http://{os.getenv('MINIO_ENDPOINT')}/{BUCKET_NAME}/{object_name}"
 
     # Provera da li email već postoji
     if User.query.filter_by(email=email).first():
@@ -159,7 +173,7 @@ def register():
         country=country,
         street=street,
         street_number=street_number,
-        profile_image=image_path
+        profile_image=image_url
     )
 
     # Dodela role "reader"
