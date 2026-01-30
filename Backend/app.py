@@ -9,6 +9,7 @@ from routes.author_request_routes import author_request_bp
 from routes.author_routes import author_bp
 from database.db import db
 from services.socketio_server import socketio
+import os
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -16,10 +17,15 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:admin@localhost:5432/postgres"
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", 5432)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# 🔌 INIT ORM
 db.init_app(app)
 
 socketio.init_app(app)
