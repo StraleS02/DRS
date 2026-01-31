@@ -32,13 +32,19 @@ redis_client = get_redis_client()
 def login():
     data = request.get_json()
     if not data:
-        return jsonify({"error": "No data provided"}), 400
+        return jsonify({
+            "message": "Bad Request.",
+            "blocked_seconds": 0
+        }), 400
 
     email = data.get("email")
     password = data.get("password")
 
     if not email or not password:
-        return jsonify({"error": "Email and password are required"}), 400
+        return jsonify({
+            "message": "Email and password are required",
+            "blocked_seconds": 0
+        }), 400
 
     # ===============================
     # 1️⃣ Redis – provera da li je blokiran
@@ -46,8 +52,8 @@ def login():
     blocked, ttl = is_blocked(redis_client, email)
     if blocked:
         return jsonify({
-            "error": "Too many failed attempts. Please try again later.",
-            "retry_after_seconds": ttl
+            "message": "Too many failed attempts. Please try again later.",
+            "blocked_seconds": ttl
         }), 403
 
     # ===============================
@@ -61,30 +67,28 @@ def login():
 
         if blocked_now:
             return jsonify({
-                "error": "Too many failed attempts. You are temporarily blocked.",
-                "blocked_for_seconds": block_ttl
+                "message": "Too many failed attempts. You are temporarily blocked.",
+                "blocked_seconds": block_ttl
             }), 403
 
         return jsonify({
-            "error": "Invalid credentials",
-            "failed_attempts": fails_now,
-            "remaining_before_block": max(0, 3 - fails_now)
+            "message": "Invalid credentials",
+            "blocked_seconds": 0
         }), 401
 
     # ❌ lozinka nije dobra
     if not check_password_hash(user.password_hash, password):
         blocked_now, block_ttl, fails_now = register_failed_attempt(redis_client, email)
 
-        if blocked_now:
+        if blocked_now: 
             return jsonify({
-                "error": "Too many failed attempts. You are temporarily blocked.",
-                "blocked_for_seconds": block_ttl
+                "message": "Too many failed attempts. You are temporarily blocked.",
+                "blocked_seconds": block_ttl
             }), 403
 
         return jsonify({
-            "error": "Invalid credentials",
-            "failed_attempts": fails_now,
-            "remaining_before_block": max(0, 3 - fails_now)
+            "message": "Invalid credentials",
+            "blocked_seconds": 0
         }), 401
 
     # ===============================
@@ -107,8 +111,7 @@ def login():
     token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
     return jsonify({
-        "message": "Login successful",
-        "access_token": token
+        "token": token
     }), 200
 
 
