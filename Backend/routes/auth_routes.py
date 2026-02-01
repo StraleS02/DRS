@@ -42,7 +42,7 @@ def login():
 
     if not email or not password:
         return jsonify({
-            "message": "Email and password are required",
+            "message": "Email and password are required.",
             "blocked_seconds": 0
         }), 400
 
@@ -122,12 +122,12 @@ def login():
 def register():
     data = request.form
     if not data:
-        return jsonify({"error": "No data provided"}), 400
+        return jsonify({"message": "No data provided."}), 400
 
     required_fields = ["first_name", "last_name", "email", "password"]
     for field in required_fields:
         if not data.get(field):
-            return jsonify({"error": f"{field} is required"}), 400
+            return jsonify({"message": f"{field} is required."}), 400
 
     first_name = data.get("first_name")
     last_name = data.get("last_name")
@@ -163,7 +163,7 @@ def register():
 
     # Provera da li email već postoji
     if User.query.filter_by(email=email).first():
-        return jsonify({"error": "Email already exists"}), 409
+        return jsonify({"message": "User with that Email already exists."}), 409
 
     # Kreiranje korisnika
     user = User(
@@ -194,6 +194,6 @@ def register():
     db.session.commit()
 
     return jsonify({
-        "message": "User registered successfully",
+        "message": "User registered successfully.",
         "user_id": user.id
     }), 201
