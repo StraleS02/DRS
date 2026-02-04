@@ -1,14 +1,23 @@
-import type { RecipePreparationDifficulty } from "../../lib/types/Recipe";
+import type { Recipe, RecipePrepDifficulty } from "../../lib/types/Recipe";
+
+export interface RecipeCardData{
+    recipe: Recipe;
+    user: {
+        name: string;
+        lastname: string;
+    }
+}
 
 export interface CreateRecipeRequest{
+    author_id: string;
     name: string;
-    type: string;
-    preparationTimeMinutes: number;
-    preparationDifficulty: RecipePreparationDifficulty;
-    people: number;
+    meal_type: string;
+    prep_time: number;
+    difficulty: RecipePrepDifficulty;
+    servings: number;
     ingredients: string;
     steps: string;
-    imageUrl: string;
+    image: string;
     tags: string[];
 }
 export interface CreateRecipeResponse{

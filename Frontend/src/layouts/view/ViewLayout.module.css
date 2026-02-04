@@ -1,0 +1,78 @@
+.view_layout{
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+.header_section,
+.content_section,
+.footer_section{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+.header_section{
+    height: 50px;
+    position: sticky;
+    top:0;
+    z-index: 1001;
+    border-bottom: 1px solid rgb(123, 146, 142);
+}
+.content_section{
+    flex:1;
+}
+.footer_section{
+    height: 60px;
+    border-top: 1px solid rgb(178, 204, 200);
+}
+
+.left_section,
+.central_section,
+.right_section{
+    display: flex;
+    justify-content: center;
+    min-width: 0px;
+}
+
+.header_section .right_section{
+    justify-content: center;
+    align-items: center;
+}
+
+.content_section > .left_section,
+.content_section > .central_section,
+.content_section > .right_section{
+    padding-top: 30px;
+}
+
+.left_section,
+.right_section{
+    flex: 3;
+}
+.central_section{
+    flex: 16;
+}
+
+.header_section > .left_section,
+.header_section > .right_section,
+.footer_section > .left_section,
+.footer_section > .right_section,
+.footer_section > .central_section,
+.content_section > .left_section,
+.content_section > .right_section{
+    background-color: white;
+}
+.content_section > .central_section{
+    background-color: white;
+}
+.header_section > .central_section{
+    background-color: white;
+}
+
+.content_section .left_section{
+    border-right: 1px solid rgb(230, 221, 221);
+}
+.content_section .right_section{
+    border-left: 1px solid rgb(230, 221, 221);
+}

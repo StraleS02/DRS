@@ -1,0 +1,40 @@
+.sidebar{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: fit-content;
+    width: 85%;
+}
+.item{
+    display: flex;
+    flex-direction: row;
+    color: #1f2e2d;
+    gap: 10px;
+    height: 36px;
+}
+.item_marker{
+    flex: 1;
+    height: 100%;
+}
+.item_title{
+    font-size: 20px;
+    flex: 15;
+    display: flex;
+    align-items: center;
+}
+.active > .item_marker{
+    background-color:#49918d;
+}
+.active > .item_title{
+    font-weight: bold;
+    color: #287470;
+}
+.item:hover:not(.active){
+    cursor:pointer;
+}
+.item:hover:not(.active) .item_title{
+    color:#378581;
+}
+.item.active{
+    background: linear-gradient(to right, rgb(227, 243, 240), white)
+}

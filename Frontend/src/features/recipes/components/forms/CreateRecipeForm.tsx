@@ -1,21 +1,24 @@
 import { useRef, useState } from "react";
-import DropdownInput from "../../../../components/form/DropDownInput";
 import FormField from "../../../../components/form/FormField";
 import TextInput from "../../../../components/form/TextInput";
-import styles from "./Form.module.css";
+import styles from "./CreateRecipeForm.module.css";
 import FileInput from "../../../../components/form/FileInput";
 import RadioInput from "../../../../components/form/RadioInput";
-import type { Recipe, RecipePreparationDifficulty } from "../../../../lib/types/Recipe";
+import type { Recipe, RecipePrepDifficulty } from "../../../../lib/types/Recipe";
 import type { CreateRecipeRequest } from "../../recipes.types";
+import SubmitButton from "../../../../components/form_elements/submit_button/SubmitButton";
 
 type CreateRecipeFormProps = {
+    children: React.ReactNode;
     onSubmit: (recipe: FormData) => void;
 };
 
-const CreateRecipeForm = ({onSubmit}:CreateRecipeFormProps) => {
-    /** FALE TAGOVI */
+const CreateRecipeForm = ({onSubmit, children}:CreateRecipeFormProps) => {
+    
+    const [feedback, setFeedback] = useState<string>("");
+
     const [type, setType] = useState<string>("");
-    const [difficulty, setDifficulty] = useState<RecipePreparationDifficulty>("Easy");
+    const [difficulty, setDifficulty] = useState<RecipePrepDifficulty>("Easy");
     const nameRef = useRef<HTMLInputElement | null>(null);
     const preparationTimeRef = useRef<HTMLInputElement | null>(null);
     const peopleRef = useRef<HTMLInputElement | null>(null);
@@ -42,53 +45,19 @@ const CreateRecipeForm = ({onSubmit}:CreateRecipeFormProps) => {
     }
 
     return (
-        <form className={styles.create_recipe_form}  onSubmit={createRecipe}>
-            <div className={styles.form_row}>
-                <FormField>
-                    <TextInput ref={nameRef} type="text" placeholder="Name"></TextInput>
-                </FormField>
+        <div className={styles.create_recipe_form}>
+            <div className={styles.title}>Create new Recipe
             </div>
-            <div className={styles.form_row}>
-                <FormField>
-                    <DropdownInput value="x" title="Type" elements={["corba", "supa", "pecenje"]} onChange={(value:string) => setType(value)}></DropdownInput>
-                </FormField>
+            <form>
+                {children}
+            </form>
+            <div className={styles.feedback} style={{opacity: feedback === "" ? 0 : 1, backgroundColor: feedback === "Success" ? "rgb(178, 255, 194)" : "rgb(253, 196, 196)"}}>
+                <span>{feedback}</span>
             </div>
-            
-            <div className={styles.form_row}>
-                <FormField>
-                    <TextInput ref={preparationTimeRef} type="number" placeholder="Preparation Minutes"></TextInput>
-                </FormField>
+            <div className={styles.submit_button_wrapper}>
+                <SubmitButton title="Create and Publish"></SubmitButton>
             </div>
-            <div className={styles.form_row}>
-                <FormField>
-                    <RadioInput value={difficulty} elements={["Easy", "Medium", "Hard"]} title="Difficulty" onChange={(value) => setDifficulty(value)}></RadioInput>
-                </FormField>
-            </div>
-            <div className={styles.form_row}>
-                <FormField>
-                    <TextInput ref={peopleRef} type="text" placeholder="Number of People"></TextInput>
-                </FormField>
-            </div>
-            <div className={styles.form_row}>
-                <FormField>
-                    <TextInput ref={ingredientsRef} type="text" placeholder="Ingredients"></TextInput>
-                </FormField>
-            </div>
-            <div className={styles.form_row}>
-                <FormField>
-                    <TextInput ref={stepsRef} type="text" placeholder="Steps"></TextInput>
-                </FormField>
-            </div>
-            <div className={styles.form_row}>
-                <FormField>
-                    <FileInput ref={imageRef}></FileInput>
-                </FormField>
-            </div>
-            
-            <div className={styles.form_row}>
-                <input type="submit" value="Create"></input>
-            </div>
-        </form>
+        </div>
     );
 }
 export default CreateRecipeForm;
