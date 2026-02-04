@@ -1,0 +1,38 @@
+.date_input{
+    width: 100%;
+    font-size: 20px;
+    color: rgb(0, 0, 0);
+    height: 40px;
+    border: 1px solid rgb(165, 165, 165);
+    padding-left: 10px;
+    background: none;
+    font-family: Arial, sans-serif;
+}
+.date_input:focus{
+    outline: none;
+    border: 1px solid rgb(51, 51, 51);
+}
+.date_input:focus{
+    outline: none;
+    border: 1px solid rgb(51, 51, 51);
+}
+.error{
+    animation-name: warning_animation;
+    animation-duration: 2s;
+    animation-timing-function: ease-in-out;
+}
+
+@keyframes warning_animation{
+    0%{
+        border: 2px solid red;
+    }
+    25%{
+        border: 2px solid rgba(255, 0, 0, 0.74);
+    }
+    50%{
+        border: 2px solid rgba(255, 0, 0, 0.541);
+    }
+    75%{
+        border: 2px solid rgba(255, 0, 0, 0.349);
+    }
+}

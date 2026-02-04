@@ -1,0 +1,18 @@
+.submit_button{
+    width: 100%;
+    height: auto;
+    display: flex;
+    background: linear-gradient(to bottom, rgb(187, 212, 208), rgb(163, 187, 183));
+    border-radius: 0;
+    border: none;
+    font-size: 20px;
+    min-height: 40px;
+    color: white;
+}
+.submit_button:hover{
+    cursor: pointer;
+    background: linear-gradient(to bottom, rgb(175, 202, 198), rgb(144, 170, 166));
+}
+.submit_button:active{
+    font-size: 18px;
+}

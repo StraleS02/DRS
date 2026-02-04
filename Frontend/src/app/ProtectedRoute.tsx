@@ -1,36 +1,27 @@
 import { useEffect, type JSX } from "react";
-import type { Role } from "../lib/constants/roles";
-import { useAuth } from "./AuthContext";
-import { Navigate } from "react-router-dom";
-import { isAuthenticated } from "../features/auth";
+import { useAuth } from "../features/auth/useAuth";
+import Loading from "../components/loading/Loading";
+import { Navigate, useLocation } from "react-router-dom";
 
 type ProtectedRouteProps = {
     children: JSX.Element;
-    requiredRoles: Role[];
 };
 
-const ProtectedRoute = ({children, requiredRoles}:ProtectedRouteProps) => {
-    const {token, user, handleLogout, loading} = useAuth();
+const ProtectedRoute = ({children}:ProtectedRouteProps) => {
+    
+    const {user, loading, validate} = useAuth();
+    const location = useLocation();
 
     useEffect(() => {
-        if(!isAuthenticated() && token) {
-            handleLogout();
-        }
-    }, []);
+        validate();
+    }, [location.pathname]);
 
-    if(loading) {
-        return <div>Loading...</div>;
-    }
+    if(loading) return <Loading size="large" theme="dark"></Loading>
 
-    if(!isAuthenticated() || !token) {
-        return (<Navigate to="/" replace/>);
-
-    }
-
-    /*if(user?.role.name !== requiredRole) {
-        return (<Navigate to={"/" + user?.role.name} replace/>);
-    }*/
-
-    return children;
+    if(!user) return <Navigate to="/login" replace></Navigate> 
+    
+    return (
+        <>{children}</>
+    );
 }
 export default ProtectedRoute;

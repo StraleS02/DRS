@@ -1,0 +1,38 @@
+.text_input{
+    width: 100%;
+    font-size: 20px;
+    color: rgb(0, 0, 0);
+    height: 40px;
+    border: none;
+    border-bottom: 2px solid rgb(207, 207, 207);
+    padding-left: 10px;
+    background: none;
+}
+.text_input:focus{
+    outline: none;
+    border-bottom: 3px solid rgb(153, 153, 153);
+}
+.text_input::placeholder{
+    color: rgb(134, 134, 134);
+    font-size: 16px;
+}
+.error{
+    animation-name: warning_animation;
+    animation-duration: 2s;
+    animation-timing-function: ease-in-out;
+}
+
+@keyframes warning_animation{
+    0%{
+        border-bottom: 3px solid red;
+    }
+    25%{
+        border-bottom: 3px solid rgba(255, 0, 0, 0.74);
+    }
+    50%{
+        border-bottom: 3px solid rgba(255, 0, 0, 0.541);
+    }
+    75%{
+        border-bottom: 2px solid rgba(255, 0, 0, 0.349);
+    }
+}

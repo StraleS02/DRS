@@ -21,7 +21,7 @@ const Loading = ({theme, size}:LoadingProps) => {
     return (
         <div className={styles.loading} style={{gap: (getSize()/2).toString() + "px"}}>
             {Array.from({length: 5}).map((_, index) => (
-                <div key={`loading-item-${index}`} className={styles[`item${index+1}`]} style={{backgroundColor: theme === "light" ? "white" : "red", width: (getSize()+2).toString() + "px", height: getSize().toString() + "px"}}></div>
+                <div key={`loading-item-${index}`} className={styles[`item${index+1}`]} style={{backgroundColor: theme === "light" ? "white" : "#00a189", width: (getSize()+2).toString() + "px", height: getSize().toString() + "px"}}></div>
             ))}
         </div>
     );

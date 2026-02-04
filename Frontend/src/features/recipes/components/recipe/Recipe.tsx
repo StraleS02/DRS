@@ -3,9 +3,14 @@ import emptyHeart from '../../../../../public/empty_heart.png';
 import fullHeart from '../../../../../public/full_heart.png';
 import halvedHeart from '../../../../../public/halved_heart.png';
 import styles from './Recipe.module.css';
+import type { RecipeCardData } from '../../recipes.types';
+
+type RecipeProps = {
+    data: RecipeCardData;
+};
 
 const Recipe = () => {
-    const [favouriteHovered, setFavouriteHovered] = useState<boolean>(false);
+    const [favoriteHovered, setFavoriteHovered] = useState<boolean>(false);
 
     return (
         <div className={styles.recipe}>
@@ -21,11 +26,11 @@ const Recipe = () => {
                 </div>
             </div>
             <div className={styles.info_section}>
-                <div className={styles.title}>Pasulj corba za 10 osoba</div>
+                <div className={styles.title}>Canttrabino de la Corbiacettro</div>
                 <div className={styles.type}>Corba</div>
                 <div className={styles.options}>
-                    <div className={styles.favourite}>
-                        <img src={favouriteHovered ? fullHeart : emptyHeart} onMouseEnter={() => setFavouriteHovered(true)} onMouseLeave={() => setFavouriteHovered(false)}></img>
+                    <div className={styles.favorite}>
+                        <img src={favoriteHovered ? fullHeart : emptyHeart} onMouseEnter={() => setFavoriteHovered(true)} onMouseLeave={() => setFavoriteHovered(false)}></img>
                     </div>
                     <div className={styles.preview}>
                         <button>View</button>

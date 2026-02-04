@@ -1,9 +1,10 @@
 .recipe{
-    width: 350px;
-    height: 400px;
-    background-color: white;
+    width: 320px;
+    height: 380px;
+    background: radial-gradient(circle, white, rgb(232, 248, 248) 100%);
     display: flex;
     flex-direction: column;
+    border: 1px solid rgb(155, 155, 155);
 }
 
 .image_section{
@@ -52,7 +53,7 @@
     color: white;
 }
 .time span{
-    color: rgb(199, 0, 0);
+    color: rgb(0, 0, 0);
 }
 
 .title{
@@ -92,19 +93,19 @@
     border-radius: 0;
     border: none;
     font-size: 18px;
-    background-color: red;
+    background-color: rgb(130, 177, 163);
     color: white;
 }
 .preview button:hover{
-    background-color: rgb(255, 27, 27);
+    font-weight: bold;
     cursor: pointer;
 }
 .preview button:active{
     font-size: 16px;
 }
-.favourite{
+.favorite{
     padding-left: 10px;   
 }
-.favourite img:hover{
+.favorite img:hover{
     cursor: pointer;
 }

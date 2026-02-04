@@ -2,6 +2,7 @@ export type JwtPayload = {
     userId: number;
     email: string;
     role: string;
+    favorite_recipe_ids: number[]
     exp: number;
 };
 

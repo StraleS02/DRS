@@ -1,20 +1,21 @@
-import type { User } from "../../lib/types/User";
+export interface AuthUser{
+    email:string;
+    role: string;
+    favorite_recipe_ids: number[]
+}
 
 export interface LoginRequest{
     email: string;
     password: string;
 }
-export interface LoginResponse{
-    status: string;
+export interface SuccessfulLoginResponse{
     token: string;
-    user: User;
+}
+export interface FailedLoginResponse{
     message: string;
-    time: number;
+    blocked_seconds: number;
 }
-export interface RegisterRequest{
-    
-}
+
 export interface RegisterResponse{
-    status: string;
-    messages: string[];
+    message: string;
 }

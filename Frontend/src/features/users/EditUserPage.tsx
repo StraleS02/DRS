@@ -1,4 +1,4 @@
-import PageLayout from "../../layouts/view/PageLayout";
+import PageLayout from "../../layouts/view/ViewLayout";
 import Navbar from "../../layouts/navbar/Navbar";
 import { getNavbarItemsByRole } from "../../lib/constants/navbar_items";
 import styles from "./ProfilePages.module.css";

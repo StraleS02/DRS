@@ -9,28 +9,28 @@ export interface NavbarItem {
     title: string;
     defaultPath: string;
     submenuItems: SubmenuItem[];
-    roles: Role[];
+    roles: string[];
 }
 
 export const navbarItems: NavbarItem[] = [
     {
         title: 'Profile',
-        defaultPath: '/profile/edit',
+        defaultPath: '/profile',
         submenuItems: [
             {
                 title: 'Edit',
-                path: '/profile/edit'
+                path: '/profile'
             }
         ],
         roles: ['author', 'reader']
     },
     {
         title: 'Recipes',
-        defaultPath: '/recipes/all',
+        defaultPath: '/recipes',
         submenuItems: [
             {
                 title: 'View All',
-                path: '/recipes/all'
+                path: '/recipes'
             },
             {
                 title: 'Create',
@@ -41,16 +41,16 @@ export const navbarItems: NavbarItem[] = [
     },
     {
         title: 'Users',
-        defaultPath: '/users/all',
+        defaultPath: '/users',
         submenuItems: [
             {
                 title: 'View All',
-                path: '/users/all'
+                path: '/users'
             }
         ],
         roles: ['admin']
     }
 ]
-export const getNavbarItemsByRole = (role: Role) => {
+export const getNavbarItemsByRole = (role: string) => {
     return navbarItems.filter(item => item.roles.includes(role));
 } 

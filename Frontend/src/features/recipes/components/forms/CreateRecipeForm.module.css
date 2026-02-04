@@ -1,0 +1,22 @@
+.create_recipe_form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.title{
+    font-size: 40px;
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+form {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+}
+.submit_button_wrapper{
+    width: 50%;
+}
