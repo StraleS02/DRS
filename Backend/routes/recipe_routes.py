@@ -206,3 +206,106 @@ def delete_recipe(recipe_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+    
+# ==================================================
+# GET ALL RECIPES
+# ==================================================
+@recipe_bp.route("/api/recipes", methods=["GET"])
+@jwt_required
+def get_all_recipes():
+
+    recipes = (
+        Recipe.query
+        .order_by(Recipe.created_at.desc())
+        .all()
+    )
+
+    output = []
+
+    for r in recipes:
+        output.append({
+            "id": r.id,
+            "name": r.name,
+            "meal_type": r.meal_type,
+            "prep_time": r.prep_time,
+            "difficulty": r.difficulty,
+            "servings": r.servings,
+            "image": r.image,
+            "created_at": r.created_at.isoformat(),
+
+            "author": {
+                "id": r.author.id,
+                "first_name": r.author.first_name,
+                "last_name": r.author.last_name,
+                "profile_image": r.author.profile_image,
+            },
+
+            "average_rating": (
+                round(
+                    sum(rt.rating for rt in r.ratings) / len(r.ratings),
+                    2
+                ) if r.ratings else 0
+            )
+        })
+
+    return jsonify(output), 200
+
+# ==================================================
+# GET RECIPE BY ID
+# ==================================================
+@recipe_bp.route("/api/recipes/<int:recipe_id>", methods=["GET"])
+@jwt_required
+def get_recipe_by_id(recipe_id):
+
+    recipe = Recipe.query.get(recipe_id)
+
+    if not recipe:
+        return jsonify({"error": "Recipe not found"}), 404
+
+    return jsonify({
+
+        "id": recipe.id,
+        "name": recipe.name,
+        "meal_type": recipe.meal_type,
+        "prep_time": recipe.prep_time,
+        "difficulty": recipe.difficulty,
+        "servings": recipe.servings,
+        "image": recipe.image,
+        "created_at": recipe.created_at.isoformat(),
+
+        "author": {
+            "id": recipe.author.id,
+            "first_name": recipe.author.first_name,
+            "last_name": recipe.author.last_name,
+            "profile_image": recipe.author.profile_image,
+        },
+
+        "average_rating": (
+            round(
+                sum(r.rating for r in recipe.ratings) / len(recipe.ratings),
+                2
+            ) if recipe.ratings else 0
+        ),
+
+        "ingredients": [
+            {
+                "id": ri.ingredient.id,
+                "name": ri.ingredient.name,
+                "quantity": ri.quantity
+            }
+            for ri in recipe.ingredients
+        ],
+
+        "steps": [
+            {
+                "step_number": s.step_number,
+                "description": s.description
+            }
+            for s in recipe.steps
+        ],
+
+        "tags": [
+            t.tag.name
+            for t in recipe.tags
+        ]
+    }), 200

@@ -25,3 +25,4 @@ class Recipe(db.Model):
     ingredients = db.relationship("RecipeIngredient", back_populates="recipe", cascade="all, delete-orphan")
     steps = db.relationship("RecipeStep", back_populates="recipe", cascade="all, delete-orphan")
     tags = db.relationship("RecipeTag", back_populates="recipe", cascade="all, delete-orphan")
+    author = db.relationship("User", backref="recipes")
