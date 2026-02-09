@@ -78,3 +78,33 @@ def update_profile():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
+# =========================
+# GET USER BY ID
+# =========================
+@user_bp.route("/api/users/<int:user_id>", methods=["GET"])
+@jwt_required
+def get_user_by_id(user_id):
+    """
+    Dobavljanje korisnika po ID-u
+    """
+
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    return jsonify({
+        "id": user.id,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "email": user.email,
+        "date_of_birth": user.date_of_birth.isoformat() if user.date_of_birth else None,
+        "gender": user.gender,
+        "country": user.country,
+        "street": user.street,
+        "street_number": user.street_number,
+        "profile_image": user.profile_image,
+        "created_at": user.created_at.isoformat(),
+        "roles": [r.name for r in user.roles]
+    }), 200
