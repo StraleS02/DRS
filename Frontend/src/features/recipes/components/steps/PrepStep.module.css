@@ -1,0 +1,60 @@
+.prep_step,
+.prep_step_input{
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    padding: 5px;
+}
+
+.prep_step{
+    background: linear-gradient(to right, rgb(235, 241, 235), white);
+}
+.prep_step_input{
+    height: 100%;
+}
+.prep_step_input input{
+    height: 60px; 
+    font-size: 20px;
+}
+
+.prep_step_input input,
+.prep_step div{
+    padding-left: 10px;
+}
+.prep_step div{
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+}
+.prep_step .number,
+.prep_step_input .number{
+    flex: 1;
+}
+
+.prep_step .description,
+.prep_step_input .description{
+    flex: 10;
+}
+
+
+.prep_step button,
+.prep_step_input button{
+    font-size: 20px;
+    border: none;
+    border-radius: 0;
+    color: white;
+    flex: 1;
+}
+.prep_step button:hover,
+.prep_step_input button:hover{
+    cursor: pointer;
+    font-weight: bold;
+}
+.prep_step button{
+    background-color: red;
+}
+.prep_step_input button{
+    background-color: rgb(1, 196, 147);
+}

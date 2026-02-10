@@ -56,18 +56,22 @@ def rate_recipe(recipe_id):
 def favorite_recipe(recipe_id):
     user_id = request.user["user_id"]
 
-    exists = FavoriteRecipe.query.filter_by(
+    favorite = FavoriteRecipe.query.filter_by(
         user_id=user_id,
         recipe_id=recipe_id
     ).first()
 
-    if exists:
-        return jsonify({"message": "Recipe already in favorites"}), 200
+    if favorite:
+        # If it exists, remove it → toggle off
+        db.session.delete(favorite)
+        db.session.commit()
+        return jsonify({"message": "Recipe removed from favorites", "favorited": False}), 200
 
-    db.session.add(FavoriteRecipe(user_id=user_id, recipe_id=recipe_id))
+    # If it doesn't exist, add it → toggle on
+    new_fav = FavoriteRecipe(user_id=user_id, recipe_id=recipe_id)
+    db.session.add(new_fav)
     db.session.commit()
-
-    return jsonify({"message": "Recipe added to favorites"}), 201
+    return jsonify({"message": "Recipe added to favorites", "favorited": True}), 201
 
 
 # =========================

@@ -1,5 +1,5 @@
 export type JwtPayload = {
-    userId: number;
+    user_id: number;
     email: string;
     role: string;
     favorite_recipe_ids: number[]

@@ -141,7 +141,6 @@ const RegisterView = () => {
         } finally {
             setWaiting(false);
         }
-        
     }
 
     return(

@@ -1,4 +1,5 @@
 export interface AuthUser{
+    id: number;
     email:string;
     role: string;
     favorite_recipe_ids: number[]

@@ -53,7 +53,7 @@
     color: white;
 }
 .time span{
-    color: rgb(0, 0, 0);
+    color: rgb(2, 80, 76);
 }
 
 .title{
@@ -71,6 +71,21 @@
     flex: 3;
     font-style: italic;
 }
+.author{
+    font-size: 18px;
+    padding: 5px;
+    color: rgb(53, 53, 53);
+    flex: 3;
+    color: black;
+}
+.author a{
+    all: unset;
+    color: rgb(1, 84, 122);
+}
+.author a:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
 .options{
     border-top: 1px solid rgb(189, 189, 189);
     display: flex;
@@ -87,7 +102,10 @@
     justify-content: right;
     padding-right: 10px;
 }
-.preview button{
+.preview a{
+    all: unset;
+}
+.preview a{
     width: 100px;
     height: 70%;
     border-radius: 0;
@@ -95,12 +113,17 @@
     font-size: 18px;
     background-color: rgb(130, 177, 163);
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: ease;
 }
-.preview button:hover{
+.preview a:hover{
     font-weight: bold;
     cursor: pointer;
+    transition: ease;
 }
-.preview button:active{
+.preview a:active{
     font-size: 16px;
 }
 .favorite{

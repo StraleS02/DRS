@@ -5,11 +5,10 @@ import PublicRoute from "./PublicRoute";
 import LoadingView from "../components/loading/LoadingView";
 import LoginView from "../features/auth/views/LoginView";
 import RegisterView from "../features/auth/views/RegisterView";
-import ViewLayout from "../layouts/view/ViewLayout";
 import RoleRedirect from "./RoleRedirect";
-import AuthWidget from "../features/auth/components/auth_widget/AuthWidget";
 import MainViewLayout from "./MainViewLayout";
-import { CreateRecipeView, RecipesView, RecipeView, RecipeWrapper } from "../features/recipes";
+import { CreateRecipeView, RecipeAuthorWrapper, RecipesView, RecipeView, RecipeWrapper } from "../features/recipes";
+import { EditProfileView } from "../features/users";
 
 export const router = createBrowserRouter([
     {
@@ -36,14 +35,15 @@ export const router = createBrowserRouter([
                 path: "recipes",
                 children: [
                     {element: <RecipesView />, index: true},
-                    {element: <RecipeWrapper></RecipeWrapper>, path: ":id"},
-                    {element: <CreateRecipeView />, path: "create"}
+                    {element: <RecipeWrapper></RecipeWrapper>, path: ":recipeId"},
+                    {element: <CreateRecipeView />, path: "create"},
+                    {element: <RecipeAuthorWrapper></RecipeAuthorWrapper>, path: "authors/:authorId"}
                 ]
             },
             {
                 path: "profile",
                 children: [
-                    {element: <div>EDIT PROFILE</div>, index: true}
+                    {element: <EditProfileView></EditProfileView>, index: true}
                 ]
             },
             {

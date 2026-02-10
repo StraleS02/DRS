@@ -1,0 +1,55 @@
+.tag{ 
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    height: 40px;
+    border-radius: 5px;
+    background-color: rgb(0, 119, 93);
+    flex: 0 0 auto;
+}
+.name,
+.x{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    height: 100%; 
+    width: 100%;
+    padding: 10px;
+}
+.name{
+    border-right: 1px solid rgb(230, 230, 230);
+    font-size: 18px;
+}
+.x{
+    font-size: 20px;
+}
+.x:hover{
+    background-color: rgb(255, 57, 57);
+    cursor: pointer;
+}
+
+.tag_input{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    height: 40px;
+    margin-top: 10px;
+}
+.tag_input input{
+    height: 100%;
+    font-size: 20px;
+    width: 300px;
+}
+.tag_input button{
+    width: 100px;
+    border: none;
+    border-radius: none;
+    background-color: rgb(1, 197, 155);
+    font-size: 20px;
+    color: white;
+}
+.tag_input button:hover{
+    cursor: pointer;
+    font-weight: bold;
+}
