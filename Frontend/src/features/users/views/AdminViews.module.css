@@ -1,0 +1,186 @@
+.users_view{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+.user_entry{
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    height: 40px;
+    background-color: rgb(238, 247, 245);
+}
+
+.header{
+     background-color: rgb(214, 224, 222);
+}
+
+
+.user_entry > div{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+}
+
+.user_entry:not(.header) > div{
+    color: rgb(8, 92, 71);
+}
+
+.id{
+    flex: 1;
+}
+.email{
+    flex: 3;
+}
+.first_name{
+    flex: 3;
+}
+.last_name{
+    flex: 4;
+}
+.removal{
+    flex: 2;
+}
+.requests{
+    flex: 2;
+}
+
+.removal button,
+.requests button{
+    border: none;
+    border-radius: 0;
+    font-size: 16px;
+    color: white;
+    height: 80%;
+    width: 70%;
+}
+
+.requests button{
+    background-color: rgb(1, 184, 92);
+}
+
+.removal button{
+    background-color: rgb(248, 46, 46);
+}
+.removal button:hover{
+    cursor: pointer;
+    font-weight: bold;
+}
+.requests button:hover{
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+.user_requests_view {
+    width: 95%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.request_entry {
+    width: 100%;
+    background-color: #f1faf9;
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.request_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.request_header > .email {
+    font-weight: 200;
+    font-size: 16px;
+    word-break: break-word;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.actions button {
+    padding: 6px 14px;
+    border-radius: 0;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    width: 120px;
+}
+
+.decline {
+    background-color: #ff3235;
+    color: white;
+}
+
+.decline:hover {
+    font-weight: bold;
+}
+
+.accept {
+    background-color: #07bb8e;
+    color: white;
+}
+
+.accept:hover {
+    font-weight: bold;
+}
+
+.text {
+    width: 100%;
+}
+
+.text textarea {
+    width: 100%;
+    min-height: 90px;
+    resize: vertical;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.text textarea:focus {
+    border-color: #97999c;
+}
+.user_report_view{
+    padding-left: 20px;
+    padding-right: 20px;
+    display: flex;
+    align-items: left;
+    width: 100%;
+    flex-direction: column;
+    gap: 20px;
+}
+.pdf_generate{
+    background-color: rgb(7, 150, 245);
+    font-size: 18px;
+    width: 300px;
+    height: 50px;
+    color: white;
+    border: none;
+    border-radius: none;
+}
+.pdf_generate:hover{
+    background-color: rgb(48, 172, 255);
+    cursor: pointer;
+}
+.pdf_title{
+    font-size: 25px;
+    color: rgb(3, 75, 63);
+    font-weight: 220;
+}

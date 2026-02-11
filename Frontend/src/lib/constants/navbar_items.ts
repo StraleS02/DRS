@@ -46,6 +46,14 @@ export const navbarItems: NavbarItem[] = [
             {
                 title: 'View All',
                 path: '/users'
+            },
+            {
+                title: 'Requests',
+                path: '/users/requests'
+            },
+            {
+                title: 'Report',
+                path: '/users/report'
             }
         ],
         roles: ['admin']

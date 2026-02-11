@@ -12,13 +12,15 @@ type CreateRecipeFormProps = {
     children: React.ReactNode;
     feedback: string;
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    title: string;
+    buttonText: string;
 };
 
-const CreateRecipeForm = ({onSubmit, feedback, children}:CreateRecipeFormProps) => {
+const CreateRecipeForm = ({onSubmit, feedback, children, title, buttonText}:CreateRecipeFormProps) => {
     
     return (
         <div className={styles.create_recipe_form}>
-            <div className={styles.title}>Create new Recipe
+            <div className={styles.title}>{title}
             </div>
             <form id="create-recipe-form" onSubmit={(e) => onSubmit(e)}>
                 {children}
@@ -27,7 +29,7 @@ const CreateRecipeForm = ({onSubmit, feedback, children}:CreateRecipeFormProps) 
                 <span>{feedback}</span>
             </div>
             <div className={styles.submit_button_wrapper}>
-                <SubmitButton formId="create-recipe-form" title="Create and Publish"></SubmitButton>
+                <SubmitButton formId="create-recipe-form" title={buttonText}></SubmitButton>
             </div>
         </div>
     );

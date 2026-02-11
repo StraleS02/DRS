@@ -10,6 +10,8 @@ import Ingredient from "../components/ingredients/Ingredient";
 import Tag from "../components/tags/Tag";
 import PrepStep from "../components/steps/PrepStep";
 import { useAuth } from "../../auth";
+import EditRecipeView from "./EditRecipeView";
+import NotFoundView from "../../../components/error/NotFoundView";
 
 const RecipeView = ({recipeId}:{recipeId: string}) => {
 
@@ -19,6 +21,8 @@ const RecipeView = ({recipeId}:{recipeId: string}) => {
     const [rating, setRating] = useState<string>("");
 
     const [recipe, setRecipe] = useState<RecipeData | null>(null);
+
+    const [notFound, setNotFound] = useState<boolean>(false);
 
     useEffect(() => {
         fetchRecipe();
@@ -31,7 +35,7 @@ const RecipeView = ({recipeId}:{recipeId: string}) => {
             setRecipe(data);
             console.log(data);
         } catch {
-            setRecipe(null);
+            setNotFound(true);
         } finally {
             setWaiting(false);
         }
@@ -67,6 +71,10 @@ const RecipeView = ({recipeId}:{recipeId: string}) => {
     }
 
     if(waiting) return <Loading size="medium" theme="dark"></Loading>
+
+    if(notFound) return <NotFoundView></NotFoundView>
+    
+    if(recipe && (recipe.author.id === user?.id)) return <EditRecipeView fetchRecipe={fetchRecipe} recipe={recipe}></EditRecipeView>
 
     return recipe ? 
     (

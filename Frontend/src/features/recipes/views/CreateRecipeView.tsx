@@ -93,7 +93,7 @@ const CreateRecipeView = () => {
             await sendRoleRequest(userId, role);  
             setFeedback("Successfully sent. You will receive an email with the update.");  
         } catch {
-            setFeedback("Failed to send");
+            setFeedback("You have already sent a request.");
         } finally {
             setWaiting(false);
         }
@@ -207,14 +207,14 @@ const CreateRecipeView = () => {
         <div className={styles.create_recipe_view}>
             <h2>In order to post new recipes yourself, you need to be an author!</h2>
             <h2>You can send a request to administrators for a role upgrade.</h2>
-            <span>Sent successfully</span>
+            <span>{feedback}</span>
             <button className={styles.request_button} onClick={handleRoleRequest}>Send</button>
         </div>
     );
 
     if(user && user.role === "author") return (
         <div className={styles.create_recipe_view}>
-            <CreateRecipeForm onSubmit={onSubmit} feedback={feedback}>
+            <CreateRecipeForm onSubmit={onSubmit} buttonText={"Publish"} title="Create and Publish new Recipe" feedback={feedback}>
                 <>
                     <div className={styles.left_section}>
                         <FormRow>
