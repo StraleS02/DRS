@@ -4,6 +4,8 @@ from flask import Blueprint, request, jsonify
 from auth.jwt_middleware import jwt_required
 from database.db import db
 from models.user import User
+from models.recipe import Recipe
+from models.favorite_recipe import FavoriteRecipe
 from services.minio_client import minio_client, BUCKET_NAME
 from werkzeug.utils import secure_filename
 
@@ -107,4 +109,34 @@ def get_user_by_id(user_id):
         "profile_image": user.profile_image,
         "created_at": user.created_at.isoformat(),
         "roles": [r.name for r in user.roles]
+    }), 200
+
+
+# ==================================
+# GET RECIPES INFO FOR CURRENT USER
+# ==================================
+@user_bp.route("/api/users/me", methods=["GET"])
+@jwt_required
+def get_me():
+    
+    user_id = request.user["user_id"]
+
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    favorite_ids = [
+        fav.recipe_id
+        for fav in FavoriteRecipe.query.filter_by(user_id=user_id).all()
+    ]
+
+    recipe_ids = [
+        recipe.id
+        for recipe in Recipe.query.filter_by(author_id=user_id).all()
+    ]
+
+    return jsonify({
+        "favorite_ids": favorite_ids,
+        "recipe_ids": recipe_ids
     }), 200

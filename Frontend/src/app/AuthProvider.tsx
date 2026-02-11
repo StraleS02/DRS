@@ -18,12 +18,12 @@ const AuthProvider = ({children}:AuthProviderProps) => {
             setUser(null);
             setLoading(false);
         
-        }else{
+        }else{ 
             try{
                 const tokenData:JwtPayload = decodeJwt(token);
                 const currentTimeSeconds = Math.floor(Date.now() / 1000);
                 if(tokenData.exp < currentTimeSeconds) handleLogout();
-                else setUser({email: tokenData.email, role: tokenData.role, favorite_recipe_ids: []});
+                else setUser({id:tokenData.user_id, email: tokenData.email, role: tokenData.role, favorite_recipe_ids: []});
             
             }catch(error){
                 handleLogout();
@@ -41,7 +41,7 @@ const AuthProvider = ({children}:AuthProviderProps) => {
         if(token) {
             setToken(token);
             const tokenData:JwtPayload = decodeJwt(token);
-            setUser({email: tokenData.email, role: tokenData.role, favorite_recipe_ids: []});
+            setUser({id: tokenData.user_id, email: tokenData.email, role: tokenData.role, favorite_recipe_ids: []});
         }else{
             clearToken();
             setUser(null);

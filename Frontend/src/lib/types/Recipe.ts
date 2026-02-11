@@ -8,7 +8,7 @@ export type RecipePrepDifficulty = "Easy" | "Medium" | "Hard";
 
 export interface Recipe{
     id: number;
-    author_id: number;
+    //author_id: number;
     
     name: string;
     meal_type: string;
@@ -16,6 +16,7 @@ export interface Recipe{
     difficulty: RecipePrepDifficulty;
     servings: number;
     image: string;
+    average_rating: number;
 
     created_at: string;
     updated_at: string;
@@ -23,7 +24,7 @@ export interface Recipe{
     //ratings
     //favorites
     //comments: RecipeComment[];
-    ingredients: RecipeIngredient[];
-    steps: RecipeStep[]; 
-    tags: RecipeTag[];
+    //ingredients: RecipeIngredient[];
+    //steps: RecipeStep[]; 
+    //tags: RecipeTag[];
 }
