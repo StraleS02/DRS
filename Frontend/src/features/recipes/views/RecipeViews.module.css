@@ -98,10 +98,15 @@
 }
 .recipe_view > div{
     width: 100%;
+    display: flex;
 }
 .recipe_view > .upper_section{
-    display: flex;
     flex-direction: row;
+}
+.recipe_view > .bottom_section{
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
 }
 .left_section,
 .right_section{

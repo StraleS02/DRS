@@ -1,3 +1,111 @@
 .recipe_comment{
-    
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    background-color: green;
+    justify-content: center;
+}
+.header{
+    height: 40px;
+    background-color: rgb(231, 229, 229);
+    display: flex;
+    border-bottom: 1px solid rgb(42, 129, 122);
+}
+.content{
+    min-height: 40px;
+    background-color: rgb(237, 243, 242);
+    display: block;
+    padding: 5px 5px 5px 5px;
+}
+.title{
+    color: rgb(1, 56, 47);
+    height: auto;
+    flex: 5;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 20px;
+}
+.author{
+    height: auto;
+    color: rgb(1, 56, 47);
+    flex: 2;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    justify-content: right;
+    padding-right: 10px;
+}
+.description{
+    font-size: 18px;
+    flex: 8;
+}
+.image{
+    width: 160px;
+    float: left;
+    margin-right: 10px;
+}
+.image img{
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.recipe_comment_input{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(237, 238, 237);
+    justify-content: center;
+}
+.recipe_comment_input .header{
+    background: none;
+    border-bottom: 1px solid rgb(180, 177, 177);
+}
+.recipe_comment_input .title{
+    flex: 4;
+    padding-left: 5px;
+}
+.title > input{
+    height: 80%;
+    font-size: 18px;
+    padding-left: 10px;
+    width: 100%;
+}
+.recipe_comment_input .file{
+    flex: 2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.recipe_comment_input .add_button{
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    padding-right: 10px;
+}
+.add_button button{
+    border:none;
+    border-radius: 0;
+    background-color: rgb(0, 180, 111);
+    color: white;
+    height: 80%;
+    width: 60%;
+    font-size: 16px;
+}
+.add_button button:hover{
+    font-weight: bold;
+    cursor: pointer;
+}
+.recipe_comment_input .content{
+    min-height: 80px;
+}
+.recipe_comment_input .content textarea{
+    font-size: 16px;
+    width: 100%;
+    resize: vertical;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 5px;
 }

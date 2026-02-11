@@ -21,7 +21,7 @@ const RecipeView = ({recipeId}:{recipeId: string}) => {
         try{
             const data = await getRecipeById(recipeId);
             setRecipe(data);
-            console.log
+            console.log(data);
         } catch {
             setRecipe(null);
         } finally {
@@ -32,7 +32,7 @@ const RecipeView = ({recipeId}:{recipeId: string}) => {
     if(waiting) return <Loading size="medium" theme="dark"></Loading>
 
     return (
-        <div className={styles.recipes_view}>
+        <div className={styles.recipe_view}>
             <div className={styles.upper_section}>
                 <div className={styles.left_section}></div>
                 <div className={styles.right_section}></div>
