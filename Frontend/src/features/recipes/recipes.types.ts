@@ -19,6 +19,9 @@ export interface MyRecipesInfo{
 }
 
 export interface RecipeData extends Recipe{
+    author: {
+        id: number,
+    }
     ingredients: RecipeIngredient[];
     steps: RecipeStep[];
     comments: RecipeComment[];

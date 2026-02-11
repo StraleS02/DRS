@@ -10,7 +10,7 @@ import DateInput from "../../../components/form_elements/date_input/DateInput";
 import FormColumn from "../../../components/form_elements/form_columns/FormColumn";
 import RadioGroup from "../../../components/form_elements/radio_group/RadioGroup";
 import SubmitButton from "../../../components/form_elements/submit_button/SubmitButton";
-import { profileUpdate } from "../users.api";
+import { getUserById, profileUpdate } from "../users.api";
 import type { ProfileUpdateResponse } from "../users.types";
 
 type EditProfileForm = {
@@ -39,7 +39,7 @@ const genderOptions:RadioOption[] = [
 
 const EditProfileView = () => {
 
-    const [currentUser, setCurrentUser] = useState<User | null>(null)
+    const {user} = useAuth();
     const imageRef = useRef<HTMLInputElement>(null);
 
     const [editProfileForm, setEditProfileForm] = useState<EditProfileForm>(
@@ -73,15 +73,45 @@ const EditProfileView = () => {
     const  {loading} = useAuth();
 
     useEffect(() => {
-        setWaiting(true);
-        try{
-
-        } catch {
-            
-        }
+        fetchCurrentUser();
     }, []);
 
-    // useEffect to fetch current user
+    const fetchCurrentUser = async () => {
+        setWaiting(true);
+        if(!user) {
+            setWaiting(false);
+            return;
+        };
+
+        try{
+            const myData = await getUserById(user.id);
+            setEditProfileForm(
+                {
+                    name: myData.first_name,
+                    lastname: myData.last_name,
+                    countryName: myData.country,
+                    birthDate: myData.date_of_birth,
+                    gender: myData.gender,
+                    streetName: myData.street,
+                    streetNumber: myData.street_number.toString()
+                }
+            ); 
+        } catch {
+            setEditProfileForm(
+                {
+                    name: "",
+                    lastname: "",
+                    countryName: "",
+                    streetName: "",
+                    birthDate: "",
+                    streetNumber: "",
+                    gender: "",
+                }
+            ); 
+        } finally {
+            setWaiting(false);
+        }
+    }
 
     if(loading || waiting) return <Loading size="medium" theme="dark"></Loading>
 

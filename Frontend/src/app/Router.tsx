@@ -8,7 +8,9 @@ import RegisterView from "../features/auth/views/RegisterView";
 import RoleRedirect from "./RoleRedirect";
 import MainViewLayout from "./MainViewLayout";
 import { CreateRecipeView, RecipeAuthorWrapper, RecipesView, RecipeView, RecipeWrapper } from "../features/recipes";
-import { EditProfileView } from "../features/users";
+import { EditProfileView, UserRequestsView } from "../features/users";
+import UsersView from "../features/users/views/UsersView";
+import UserReportView from "../features/users/views/UserReportView";
 
 export const router = createBrowserRouter([
     {
@@ -49,7 +51,9 @@ export const router = createBrowserRouter([
             {
                 path: "users",
                 children: [
-                    {element: <div>ALL USERS</div>, path:"all", index: true}
+                    {element: <UsersView></UsersView>, index: true},
+                    {element: <UserRequestsView></UserRequestsView>, path: "requests"},
+                    {element: <UserReportView></UserReportView>, path: "report"}
                 ]
             }
         ]

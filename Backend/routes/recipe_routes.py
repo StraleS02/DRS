@@ -298,6 +298,7 @@ def get_recipe_by_id(recipe_id):
 
         "steps": [
             {
+                "id": s.id,
                 "step_number": s.step_number,
                 "description": s.description
             }
@@ -305,7 +306,25 @@ def get_recipe_by_id(recipe_id):
         ],
 
         "tags": [
-            t.tag.name
+            {
+                "id": t.tag.id,
+                "name": t.tag.name
+            }
             for t in recipe.tags
+        ],
+
+        "comments": [
+            {
+                "id": c.id,
+                "content": c.content,
+                "title": c.title,
+                "image": c.image,
+                "recipe_id": c.recipe.id,
+                "user": {
+                    "id": c.user.id,
+                    "email": c.user.email
+                }
+            }
+            for c in recipe.comments
         ]
     }), 200

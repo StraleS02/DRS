@@ -93,7 +93,7 @@ const CreateRecipeView = () => {
             await sendRoleRequest(userId, role);  
             setFeedback("Successfully sent. You will receive an email with the update.");  
         } catch {
-            setFeedback("Failed to send");
+            setFeedback("You have already sent a request.");
         } finally {
             setWaiting(false);
         }
@@ -103,7 +103,7 @@ const CreateRecipeView = () => {
         let q:number = parseFloat(quantity);
         setCreateRecipeForm((prev) => ({
             ...prev, ingredients: [
-                ...prev.ingredients, {recipe_id: 0, quantity: q, ingredient: {id: 0, name: name}}
+                ...prev.ingredients, {name: name, quantity: q, recipe_id: 0, id: 0}
             ]
         }));
     }
@@ -130,17 +130,17 @@ const CreateRecipeView = () => {
         }))
     }
 
-    const addTag = (tag: RecipeTag) => {
+    const addTag = (name: string) => {
         setCreateRecipeForm((prev) => ({
             ...prev, tags: [
-                ...prev.tags, tag
+                ...prev.tags, {id: 0, name: name, recipe_id: 0}
             ]
         }))
     }
 
     const removeTag = (name: string) => {
         setCreateRecipeForm((prev) => ({
-            ...prev, tags: prev.tags.filter((tag) => tag.tag.name !== name)
+            ...prev, tags: prev.tags.filter((tag) => tag.name !== name)
         }))
     }
 
@@ -180,8 +180,8 @@ const CreateRecipeView = () => {
             formData.append("servings", createRecipeForm.servings);
             const file = imageRef.current?.files?.[0];
             if(file) formData.append("image", file);
-            formData.append("tags", JSON.stringify(createRecipeForm.tags.map(t => t.tag.name)));
-            formData.append("ingredients", JSON.stringify(createRecipeForm.ingredients.map(i => ({ name: i.ingredient.name, quantity: i.quantity }))));
+            formData.append("tags", JSON.stringify(createRecipeForm.tags.map(t => t.name)));
+            formData.append("ingredients", JSON.stringify(createRecipeForm.ingredients.map(i => ({ name: i.name, quantity: i.quantity }))));
             formData.append("steps", JSON.stringify(createRecipeForm.steps.map(s => s.description)));
     
             try {
@@ -207,14 +207,14 @@ const CreateRecipeView = () => {
         <div className={styles.create_recipe_view}>
             <h2>In order to post new recipes yourself, you need to be an author!</h2>
             <h2>You can send a request to administrators for a role upgrade.</h2>
-            <span>Sent successfully</span>
+            <span>{feedback}</span>
             <button className={styles.request_button} onClick={handleRoleRequest}>Send</button>
         </div>
     );
 
     if(user && user.role === "author") return (
         <div className={styles.create_recipe_view}>
-            <CreateRecipeForm onSubmit={onSubmit} feedback={feedback}>
+            <CreateRecipeForm onSubmit={onSubmit} buttonText={"Publish"} title="Create and Publish new Recipe" feedback={feedback}>
                 <>
                     <div className={styles.left_section}>
                         <FormRow>

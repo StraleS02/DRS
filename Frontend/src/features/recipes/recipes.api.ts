@@ -27,3 +27,15 @@ export const getRecipeById = async (recipeId: string) => {
     const response = await api.get(`/api/recipes/${recipeId}`);
     return response.data;
 }
+export const createComment = async (commentFormData:FormData, recipeId: string) => {
+    await api.post(`/api/recipes/${recipeId}/comment`, commentFormData);
+}
+export const rateRecipe = async (rating:number, recipeId: string) => {
+    await api.post(`/api/recipes/${recipeId}/rate`, {rating: rating});
+}
+export const updateRecipe = async (recipeId:number, formData: FormData) => {
+       await api.put(`/api/recipes/${recipeId}`, formData);
+}
+export const deleteRecipe = async (recipeId:number) => {
+       await api.delete(`/api/recipes/${recipeId}`);
+}

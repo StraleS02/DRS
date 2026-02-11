@@ -10,7 +10,7 @@ type IngredientProps = {
 const Ingredient = ({ingredient, editable, onClick}:IngredientProps) => {
     return (
         <div className={styles.ingredient}>
-            <div className={styles.name}>{ingredient.ingredient.name}</div>
+            <div className={styles.name}>{ingredient.name}</div>
             <div className={styles.quantity}>{ingredient.quantity + "g"}</div>
             {editable && <button type="button" onClick={() => onClick(ingredient)}>Drop</button>}
         </div>
