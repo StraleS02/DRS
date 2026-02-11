@@ -1,8 +1,8 @@
-import type { RecipeComment } from "../../../../lib/types/RecipeComment";
+import type { RecipeComment as RecipeCommentType } from "../../../../lib/types/RecipeComment";
 import styles from "./RecipeComment.module.css";
 
 type RecipeCommentProps = {
-    comment: RecipeComment;
+    comment: RecipeCommentType;
 };
 
 const RecipeComment = () => {

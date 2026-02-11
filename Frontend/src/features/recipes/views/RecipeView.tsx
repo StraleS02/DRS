@@ -4,6 +4,7 @@ import Loading from "../../../components/loading/Loading";
 import { getRecipeById } from "../recipes.api";
 import type { RecipeData } from "../recipes.types";
 import RecipeComment from "../components/comments/RecipeComment";
+import  type {RecipeComment as RecipeCommentType} from "../../../lib/types/RecipeComment";
 import RecipeCommentInput from "../components/comments/RecipeCommentInput";
 
 const RecipeView = ({recipeId}:{recipeId: string}) => {
