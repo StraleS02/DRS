@@ -11,8 +11,8 @@ const Tag = ({recipeTag, editable, onClick}:TagProps) => {
     
     return (
         <div className={styles.tag}>
-            <div className={styles.name}>{recipeTag.tag.name}</div>
-            {editable && <div className={styles.x} onClick={() => onClick(recipeTag.tag.name)}>X</div>}
+            <div className={styles.name}>{recipeTag.name}</div>
+            {editable && <div className={styles.x} onClick={() => onClick(recipeTag.name)}>X</div>}
         </div>
     );
 }

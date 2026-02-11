@@ -1,7 +1,8 @@
 import type { Ingredient } from "./Ingredient";
 
 export interface RecipeIngredient{
+    id: number;
     recipe_id: number;
-    ingredient: Ingredient;
+    name: string;
     quantity: number;
 }

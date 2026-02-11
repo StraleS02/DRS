@@ -103,7 +103,7 @@ const CreateRecipeView = () => {
         let q:number = parseFloat(quantity);
         setCreateRecipeForm((prev) => ({
             ...prev, ingredients: [
-                ...prev.ingredients, {recipe_id: 0, quantity: q, ingredient: {id: 0, name: name}}
+                ...prev.ingredients, {name: name, quantity: q, recipe_id: 0, id: 0}
             ]
         }));
     }
@@ -130,17 +130,17 @@ const CreateRecipeView = () => {
         }))
     }
 
-    const addTag = (tag: RecipeTag) => {
+    const addTag = (name: string) => {
         setCreateRecipeForm((prev) => ({
             ...prev, tags: [
-                ...prev.tags, tag
+                ...prev.tags, {id: 0, name: name, recipe_id: 0}
             ]
         }))
     }
 
     const removeTag = (name: string) => {
         setCreateRecipeForm((prev) => ({
-            ...prev, tags: prev.tags.filter((tag) => tag.tag.name !== name)
+            ...prev, tags: prev.tags.filter((tag) => tag.name !== name)
         }))
     }
 
@@ -180,8 +180,8 @@ const CreateRecipeView = () => {
             formData.append("servings", createRecipeForm.servings);
             const file = imageRef.current?.files?.[0];
             if(file) formData.append("image", file);
-            formData.append("tags", JSON.stringify(createRecipeForm.tags.map(t => t.tag.name)));
-            formData.append("ingredients", JSON.stringify(createRecipeForm.ingredients.map(i => ({ name: i.ingredient.name, quantity: i.quantity }))));
+            formData.append("tags", JSON.stringify(createRecipeForm.tags.map(t => t.name)));
+            formData.append("ingredients", JSON.stringify(createRecipeForm.ingredients.map(i => ({ name: i.name, quantity: i.quantity }))));
             formData.append("steps", JSON.stringify(createRecipeForm.steps.map(s => s.description)));
     
             try {

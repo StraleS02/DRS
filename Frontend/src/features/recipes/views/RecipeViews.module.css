@@ -72,7 +72,7 @@
 .author_row{
     display: flex;
     flex-direction: row;
-    background-color: rgb(225, 255, 243);
+    background-color: rgb(231, 245, 242);
     padding: 10px;
     align-items: center;
     gap: 20px;
@@ -95,6 +95,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    gap:40px;
 }
 .recipe_view > div{
     width: 100%;
@@ -111,4 +112,80 @@
 .left_section,
 .right_section{
     flex: 1;
+}
+.left_section{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.info_row{
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(231, 245, 242);
+    padding: 10px;
+    align-items: center;
+    gap: 20px;
+    width: 90%;
+}
+.image{
+    width: 90%;
+    height: fit-content;
+}
+.image img{
+    width: 30%;
+    height: auto;
+}
+.rating{
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(253, 250, 235);
+    height: 40px;
+    align-items: center;
+    gap: 20px;
+    padding-left: 10px;
+}
+.rating > div{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.rating input{
+    font-size: 18px;
+    height: 80%;
+    width: 80px;
+}
+.rating button{
+    height: 80%;
+    border-radius: none;
+    border: none;
+    background-color: rgb(131, 123, 53);
+    color: white;
+    font-size: 16px;
+    width: 100px;
+}
+.rating button:hover{
+    background-color: rgb(168, 157, 60);
+    cursor:pointer;
+}
+.lists{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 5px;
+}
+.list_title{
+    font-size: 18px;
+}
+.list_of_elements{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.list_of_tags{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
 }

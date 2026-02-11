@@ -3,3 +3,4 @@ export type {AuthUser, LoginRequest, SuccessfulLoginResponse, FailedLoginRespons
 export {AuthContext} from "./AuthContext";
 export {default as LoginView } from "./views/LoginView";
 export {default as RegisterView} from "./views/RegisterView";
+export {useAuth} from "./useAuth";

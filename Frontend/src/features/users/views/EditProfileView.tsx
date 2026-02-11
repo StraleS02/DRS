@@ -75,9 +75,11 @@ const EditProfileView = () => {
     useEffect(() => {
         setWaiting(true);
         try{
-
+            
         } catch {
             
+        } finally {
+            setWaiting(false);
         }
     }, []);
 

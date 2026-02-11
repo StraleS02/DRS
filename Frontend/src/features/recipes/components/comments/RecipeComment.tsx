@@ -5,18 +5,18 @@ type RecipeCommentProps = {
     comment: RecipeCommentType;
 };
 
-const RecipeComment = () => {
+const RecipeComment = ({comment}: RecipeCommentProps) => {
     return (
         <div className={styles.recipe_comment}>
             <div className={styles.header}>
-                <div className={styles.title}>BROTHER GOOOD</div>
-                <div className={styles.author}>by: longfords@gmail.com</div>
+                <div className={styles.title}>{comment.title}</div>
+                <div className={styles.author}>{comment.user.email}</div>
             </div>
             <div className={styles.content}>
                 <div className={styles.image}>
-                    <img src="/pasulj.jpg"></img>
+                    <img src={comment.image}></img>
                 </div>
-                <div className={styles.description}></div>
+                <div className={styles.description}>{comment.content}</div>
             </div>
         </div>
     );
