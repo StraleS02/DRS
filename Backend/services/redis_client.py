@@ -14,7 +14,7 @@ import redis
 
 def get_redis_client() -> redis.Redis:
     # Ako jednog dana dodate .env, samo postavite REDIS_URL u environment.
-    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    redis_url = os.getenv("REDIS_URL", "redis://redis:6379/0")
 
     # decode_responses=True -> vraća stringove umjesto bytes (lakše za rad)
     return redis.Redis.from_url(redis_url, decode_responses=True)
