@@ -25,5 +25,44 @@ services:
     volumes:
       - minio_data:/data
 
+  db:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: myapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./Database/schema.sql:/docker-entrypoint-initdb.d/init.sql
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: "http://localhost:5000"
+      VITE_MINIO_HOST: "localhost"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+      - redis
+      - minio
+      - mailhog
+      
 volumes:
+  postgres_data:
   minio_data:
+

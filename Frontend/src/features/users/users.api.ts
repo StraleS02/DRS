@@ -7,7 +7,7 @@ export const getUserById = async (id:number) => {
     return response.data;
 }
 export const profileUpdate = async (profileUpdateData:FormData) => {
-    const response = await api.put<ProfileUpdateResponse>("/api/users/profile", profileUpdate);
+    const response = await api.put<ProfileUpdateResponse>("/api/users/profile", profileUpdateData);
 }
 export const getAllUsers = async () => {
     const response = await api.get<{users: User[]}>("/api/admin/users");

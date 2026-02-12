@@ -230,3 +230,54 @@ CREATE TABLE IF NOT EXISTS favorites (
         REFERENCES recipes(id)
         ON DELETE CASCADE
 );
+
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password_hash,
+    date_of_birth,
+    gender,
+    country,
+    street,
+    street_number,																																															
+    profile_image
+)
+VALUES (
+    'Author',
+    'Authorovic',
+    'author@a.com',
+    'scrypt:32768:8:1$U9t4iZDRewd6EBQP$c1a40dfe294f40191c8940441eb76c834bd9c0e751a6b7324b933f2807e16eac0f90798fb7f488840d6d5d82ac88cb0dc752ca23f2ec94c19fcf0276f9091e6b',
+    '1996-01-01',
+    'MALE',
+    'Serbia',
+    'Main Street',
+    '5',
+    NULL
+);
+INSERT INTO users (
+    first_name,
+    last_name,
+    email,
+    password_hash,
+    date_of_birth,
+    gender,
+    country,
+    street,
+    street_number,																																															
+    profile_image
+)
+VALUES (
+    'Amin',
+    'Admintado',
+    'admin@admin',
+    'scrypt:32768:8:1$U9t4iZDRewd6EBQP$c1a40dfe294f40191c8940441eb76c834bd9c0e751a6b7324b933f2807e16eac0f90798fb7f488840d6d5d82ac88cb0dc752ca23f2ec94c19fcf0276f9091e6b',
+    '1993-01-01',
+    'MALE',
+    'Serbia',
+    'Notmatter',
+    '20',
+    NULL
+);
+insert into user_roles (user_id, role_id) values ('1', '2');
+insert into user_roles (user_id, role_id) values ('2', '3');
