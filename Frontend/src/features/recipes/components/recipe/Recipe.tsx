@@ -5,6 +5,7 @@ import halvedHeart from '/halved_heart.png';
 import styles from './Recipe.module.css';
 import type { RecipeCardData } from '../../recipes.types';
 import { Link } from 'react-router-dom';
+import { getImageUrl } from '../../../../utils/image_resolver';
 
 type RecipeProps = {
     currentUserId?: number;
@@ -32,7 +33,7 @@ const Recipe = ({interactable, isFavorite, currentUserId, recipeData, onFavorite
     return (
         <div className={styles.recipe}>
             <div className={styles.image_section}>
-                <img src={recipeData.image} alt={recipeData.image}></img>
+                <img src={getImageUrl(recipeData.image)} alt={recipeData.image}></img>
                 <div className={styles.description} style={{background: `linear-gradient(to right, ${difficultyColor(recipeData.difficulty, 0.7)}, rgba(255, 255, 255, 0.7))`}}>
                     <div className={styles.difficulty}>
                         <span>{recipeData.difficulty}</span>
