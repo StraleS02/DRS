@@ -4,6 +4,7 @@ import { getAuthor } from "../recipes.api";
 import { type RecipeAuthorDataResponse } from "../recipes.types";
 import Recipe from "../components/recipe/Recipe";
 import Loading from "../../../components/loading/Loading";
+import { getImageUrl } from "../../../utils/image_resolver";
 
 const RecipeAuthorView = ({authorId}:{authorId: string}) => {
 
@@ -34,7 +35,7 @@ const RecipeAuthorView = ({authorId}:{authorId: string}) => {
             <div className={styles.recipe_author_view}>
                 {data.author.profile_image && (
                     <div className={styles.author_row}>
-                        <img src={data.author.profile_image} alt={data.author.profile_image}></img>
+                        <img src={getImageUrl(data.author.profile_image)} alt={data.author.profile_image}></img>
                     </div>
                 )}
                 <div className={styles.author_row}>

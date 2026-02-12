@@ -1,4 +1,5 @@
 import type { RecipeComment as RecipeCommentType } from "../../../../lib/types/RecipeComment";
+import { getImageUrl } from "../../../../utils/image_resolver";
 import styles from "./RecipeComment.module.css";
 
 type RecipeCommentProps = {
@@ -14,7 +15,7 @@ const RecipeComment = ({comment}: RecipeCommentProps) => {
             </div>
             <div className={styles.content}>
                 <div className={styles.image}>
-                    <img src={comment.image}></img>
+                    {comment.image && <img src={getImageUrl(comment.image)}></img>}
                 </div>
                 <div className={styles.description}>{comment.content}</div>
             </div>

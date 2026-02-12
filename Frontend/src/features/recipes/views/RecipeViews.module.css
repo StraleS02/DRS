@@ -189,3 +189,16 @@
     flex-wrap: wrap;
     gap: 5px;
 }
+.delete_button{
+    width: 300PX;
+    border: none;
+    border-radius: 0;
+    background-color: rgb(255, 18, 18);
+    height: 40px;
+    color: white;
+    font-size: 18px;
+}
+.delete_button:hover{
+    background-color: rgb(255, 50, 50);
+    cursor: pointer;
+}

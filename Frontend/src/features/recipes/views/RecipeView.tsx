@@ -12,6 +12,7 @@ import PrepStep from "../components/steps/PrepStep";
 import { useAuth } from "../../auth";
 import EditRecipeView from "./EditRecipeView";
 import NotFoundView from "../../../components/error/NotFoundView";
+import { getImageUrl } from "../../../utils/image_resolver";
 
 const RecipeView = ({recipeId}:{recipeId: string}) => {
 
@@ -63,6 +64,7 @@ const RecipeView = ({recipeId}:{recipeId: string}) => {
         try{
             await rateRecipe(Number.parseInt(rating), recipeId);
             setRating("");
+            await fetchRecipe();
         } catch {
             //
         } finally {
@@ -82,7 +84,7 @@ const RecipeView = ({recipeId}:{recipeId: string}) => {
             <div className={styles.upper_section}>
                 <div className={styles.left_section}>
                     <div className={styles.image}>
-                        <img src={recipe.image} alt={recipe.image}></img>
+                        <img src={getImageUrl(recipe.image)} alt={recipe.image}></img>
                     </div>
                     <div className={styles.info_row}>
                         <div className={styles.row_title}>{"Name: "}</div>
@@ -112,7 +114,7 @@ const RecipeView = ({recipeId}:{recipeId: string}) => {
                         <div className={styles.rating}>
                         <div className={styles.row_title}>{"Rate: "}</div>
                         <div className={styles.row_content}>
-                            <input type="number" min="1" max="5" onChange={(e) => setRating(e.target.value)}></input>
+                            <input type="number" min="1" max="5" value={rating} onChange={(e) => setRating(e.target.value)}></input>
                         </div>
                         <div className={styles.row_content}>
                             <button onClick={() => handleRateButtonClicked()} disabled={rating === ""}>Confirm</button>

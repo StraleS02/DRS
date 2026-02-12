@@ -239,19 +239,19 @@ const EditRecipeView = ({recipe, fetchRecipe}:EditRecipeViewProps) => {
                     
                     <div className={styles.left_section}>
                         <FormRow>
-                            <TextInput key={errorTrigger} placeholder="Name" type="text" value={editRecipeForm.name} onChange={(value) => setEditRecipeForm(prev => ({...prev, name: value}))}></TextInput>
+                            <TextInput key={errorTrigger} placeholder="Name" type="text" value={editRecipeForm.name} onChange={(value) => setEditRecipeForm(prev => ({...prev, name: value}))} error={editRecipeFormError.name}></TextInput>
                         </FormRow>
                         <FormRow>
-                            <TextInput key={errorTrigger} placeholder="Meal Type" type="text" value={editRecipeForm.mealType} onChange={(value) => setEditRecipeForm(prev => ({...prev, mealType: value}))}></TextInput>
+                            <TextInput key={errorTrigger} placeholder="Meal Type" type="text" value={editRecipeForm.mealType} onChange={(value) => setEditRecipeForm(prev => ({...prev, mealType: value}))} error={editRecipeFormError.mealType}></TextInput>
                         </FormRow>
                         <FormRow>
-                            <TextInput key={errorTrigger} placeholder="Preparation Time  (minutes)" type="number" value={editRecipeForm.prepTime} onChange={(value) => setEditRecipeForm(prev => ({...prev, prepTime: value}))}></TextInput>
+                            <TextInput key={errorTrigger} placeholder="Preparation Time  (minutes)" type="number" value={editRecipeForm.prepTime} onChange={(value) => setEditRecipeForm(prev => ({...prev, prepTime: value}))}  error={editRecipeFormError.prepTime}></TextInput>
                         </FormRow>
                         <FormRow>
                             <RadioGroup key={errorTrigger} name="difficulty" title="Difficulty:" color="#94adab" fontColor="#000000" options={difficultyOptions} value={editRecipeForm.difficulty} onChange={(value) => setEditRecipeForm(prev => ({...prev, difficulty: value}))}></RadioGroup>
                         </FormRow>
                         <FormRow>
-                            <TextInput key={errorTrigger} placeholder="Servings" type="number" value={editRecipeForm.servings} onChange={(value) => setEditRecipeForm(prev => ({...prev, servings: value}))}></TextInput>
+                            <TextInput key={errorTrigger} placeholder="Servings" type="number" value={editRecipeForm.servings} onChange={(value) => setEditRecipeForm(prev => ({...prev, servings: value}))}  error={editRecipeFormError.servings}></TextInput>
                         </FormRow>
                         <FormRow>
                             <input ref={imageRef} style={{width: "100%"}} type="file" accept="image/*"></input>
@@ -260,22 +260,22 @@ const EditRecipeView = ({recipe, fetchRecipe}:EditRecipeViewProps) => {
                             <button onClick={(e) => handleDeleteClicked(e)} className={styles.delete_button}>Delete</button>
                         </FormRow>
                     </div>
+                    <br/>
                     <div className={styles.right_section}>
                         <FormRow direction="column" gap="10px">
                                 <label style={{width: "100%", fontSize: "22px"}}>Ingredients</label>
                                 {editRecipeForm.ingredients.map((ing, index) => (
                                     <Ingredient key={index} editable={true} ingredient={ing} onClick={removeIngredient}></Ingredient>
                                 ))}
-                                <IngredientInput onClick={addIngredient}></IngredientInput>
                         </FormRow>
+                        <br/>
                         <FormRow direction="column" gap="10px">
                                 <label style={{width: "100%", fontSize: "22px"}}>Preparation Steps</label>
                                 {editRecipeForm.steps.map((step, index) => (
                                     <PrepStep key={index} editable={true} step={step} onClick={removeStep}></PrepStep>
                                 ))}
-                                <PrepStepInput onClick={addStep}></PrepStepInput>
                         </FormRow>
-                        
+                        <br/>
                         <label style={{width: "100%", fontSize: "22px"}}>Tags</label>
                         <div style={{maxWidth: "100%", display: "flex", flexWrap: "wrap", gap: "5px"}}>
                         </div>
@@ -284,7 +284,6 @@ const EditRecipeView = ({recipe, fetchRecipe}:EditRecipeViewProps) => {
                                 <Tag key={index} recipeTag={tag} editable={true} onClick={removeTag}></Tag>
                             ))}
                         </div>
-                        <TagInput onClick={addTag}></TagInput>
                     </div>
                 </>
             </CreateRecipeForm>

@@ -187,6 +187,19 @@ const CreateRecipeView = () => {
             try {
                 await createRecipe(formData);
                 setFeedback("Success");
+                setCreateRecipeForm(
+                    {
+                        name: "",
+                        mealType: "",
+                        prepTime: "",
+                        difficulty: difficultyOptions[0].value,
+                        servings: "",
+                        tags: [],
+                        ingredients: [],
+                        steps: []
+                    }
+                );
+            
             } catch (error: any) {
                 if(!error.response) {
                     setFeedback("No connection to the server.");
@@ -218,19 +231,19 @@ const CreateRecipeView = () => {
                 <>
                     <div className={styles.left_section}>
                         <FormRow>
-                            <TextInput key={errorTrigger} placeholder="Name" type="text" value={createRecipeForm.name} onChange={(value) => setCreateRecipeForm(prev => ({...prev, name: value}))}></TextInput>
+                            <TextInput key={errorTrigger} placeholder="Name" type="text" value={createRecipeForm.name} onChange={(value) => setCreateRecipeForm(prev => ({...prev, name: value}))} error={createRecipeFormError.name}></TextInput>
                         </FormRow>
                         <FormRow>
-                            <TextInput key={errorTrigger} placeholder="Meal Type" type="text" value={createRecipeForm.mealType} onChange={(value) => setCreateRecipeForm(prev => ({...prev, mealType: value}))}></TextInput>
+                            <TextInput key={errorTrigger} placeholder="Meal Type" type="text" value={createRecipeForm.mealType} onChange={(value) => setCreateRecipeForm(prev => ({...prev, mealType: value}))}  error={createRecipeFormError.mealType}></TextInput>
                         </FormRow>
                         <FormRow>
-                            <TextInput key={errorTrigger} placeholder="Preparation Time  (minutes)" type="number" value={createRecipeForm.prepTime} onChange={(value) => setCreateRecipeForm(prev => ({...prev, prepTime: value}))}></TextInput>
+                            <TextInput key={errorTrigger} placeholder="Preparation Time  (minutes)" type="number" value={createRecipeForm.prepTime} onChange={(value) => setCreateRecipeForm(prev => ({...prev, prepTime: value}))} error={createRecipeFormError.prepTime}></TextInput>
                         </FormRow>
                         <FormRow>
                             <RadioGroup key={errorTrigger} name="difficulty" title="Difficulty:" color="#94adab" fontColor="#000000" options={difficultyOptions} value={createRecipeForm.difficulty} onChange={(value) => setCreateRecipeForm(prev => ({...prev, difficulty: value}))}></RadioGroup>
                         </FormRow>
                         <FormRow>
-                            <TextInput key={errorTrigger} placeholder="Servings" type="number" value={createRecipeForm.servings} onChange={(value) => setCreateRecipeForm(prev => ({...prev, servings: value}))}></TextInput>
+                            <TextInput key={errorTrigger} placeholder="Servings" type="number" value={createRecipeForm.servings} onChange={(value) => setCreateRecipeForm(prev => ({...prev, servings: value}))} error={createRecipeFormError.servings}></TextInput>
                         </FormRow>
                         <FormRow>
                             <input ref={imageRef} style={{width: "100%"}} type="file" accept="image/*"></input>
